@@ -32,7 +32,8 @@ knowledge of the CeCILL license and that you accept its terms.
 #define MAINWINDOW_HPP
 
 #include <QMainWindow>
-#include <QGraphicsScene>
+#include <QGraphicsView>
+class QGraphicsView;
 
 namespace Ui {
   class MainWindow;
@@ -42,15 +43,16 @@ class MainWindow : public QMainWindow
 {
   Q_OBJECT
 
-public:
-  QGraphicsScene *myScene;
+
+private:
+  QGraphicsView *_pView;
+  Ui::MainWindow *ui;
 
 public:
   explicit MainWindow(QWidget *parent = 0);
   ~MainWindow();
-
 private:
-//  Ui::MainWindow *ui;
+  void createGraphics();
 };
 
 #endif // MAINWINDOW_HPP

@@ -28,37 +28,15 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL license and that you accept its terms.
 */
 
-#include "mainwindow.hpp"
-#include "ui_mainwindow.h"
-#include "plugincurve.hpp"
-#include <QGraphicsView>
+#ifndef PLUGINCURVE_GLOBAL_HPP
+#define PLUGINCURVE_GLOBAL_HPP
 
-MainWindow::MainWindow(QWidget *parent) :
-  QMainWindow(parent),
-  ui(new Ui::MainWindow)
-{
-  ui->setupUi(this);
-  createGraphics();
-}
+#include <QtCore/qglobal.h>
 
-void MainWindow::createGraphics()
-{
-  _pView = ui->graphicsView;
-  QGraphicsScene *scene = new QGraphicsScene(_pView->rect(),0);
-  scene->setBackgroundBrush(Qt::gray);
-  _pView->setScene(scene);
-  QGraphicsRectItem *rect = new QGraphicsRectItem();
-  rect->setRect(0,0,200,200);
-  PluginCurve *plugincurve = new PluginCurve(0);
-//  PluginCurve *plugincurve = new PluginCurve(rect->toGraphicsObject());
-//  scene->addItem(rect);
-  scene->addItem(plugincurve->view());
-  rect->show();
-  _pView->update();
-  _pView->show();
-}
+#if defined(PLUGINCURVE_LIBRARY)
+#  define PLUGINCURVESHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define PLUGINCURVESHARED_EXPORT Q_DECL_IMPORT
+#endif
 
-MainWindow::~MainWindow()
-{
-  delete ui;
-}
+#endif // PLUGINCURVE_GLOBAL_HPP

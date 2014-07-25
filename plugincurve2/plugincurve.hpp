@@ -28,37 +28,36 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL license and that you accept its terms.
 */
 
-#include "mainwindow.hpp"
-#include "ui_mainwindow.h"
-#include "plugincurve.hpp"
-#include <QGraphicsView>
+#ifndef PLUGINCURVE_HPP
+#define PLUGINCURVE_HPP
 
-MainWindow::MainWindow(QWidget *parent) :
-  QMainWindow(parent),
-  ui(new Ui::MainWindow)
-{
-  ui->setupUi(this);
-  createGraphics();
-}
+#include <QObject>
+#include <QGraphicsItem>
 
-void MainWindow::createGraphics()
-{
-  _pView = ui->graphicsView;
-  QGraphicsScene *scene = new QGraphicsScene(_pView->rect(),0);
-  scene->setBackgroundBrush(Qt::gray);
-  _pView->setScene(scene);
-  QGraphicsRectItem *rect = new QGraphicsRectItem();
-  rect->setRect(0,0,200,200);
-  PluginCurve *plugincurve = new PluginCurve(0);
-//  PluginCurve *plugincurve = new PluginCurve(rect->toGraphicsObject());
-//  scene->addItem(rect);
-  scene->addItem(plugincurve->view());
-  rect->show();
-  _pView->update();
-  _pView->show();
-}
+#include "plugincurve2_global.hpp"
+#include "plugincurvemodel.hpp"
+#include "plugincurveview.hpp"
+#include "plugincurvepresenter.hpp"
 
-MainWindow::~MainWindow()
+class PLUGINCURVESHARED_EXPORT PluginCurve : public QObject
 {
-  delete ui;
-}
+  Q_OBJECT
+
+public:
+  PluginCurve(QGraphicsObject *parent);
+  ~PluginCurve();
+  QGraphicsObject *view();
+private:
+  QGraphicsObject *_pParent;
+  PluginCurveModel *_pModel;
+  PluginCurvePresenter *_pPresenter;
+  PluginCurveView *_pView;
+
+signals :
+  ///@todo connect storey signal to this one
+  void stateChanged(bool b);
+
+public slots :
+};
+
+#endif // PLUGINCURVE_HPP

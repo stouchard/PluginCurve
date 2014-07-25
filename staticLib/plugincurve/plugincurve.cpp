@@ -28,37 +28,40 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL license and that you accept its terms.
 */
 
-#include "mainwindow.hpp"
-#include "ui_mainwindow.h"
 #include "plugincurve.hpp"
-#include <QGraphicsView>
+#include <QGraphicsItem>
+#include "plugincurveview.hpp"
+#include "plugincurvemodel.hpp"
+#include "plugincurvepresenter.hpp"
 
-MainWindow::MainWindow(QWidget *parent) :
-  QMainWindow(parent),
-  ui(new Ui::MainWindow)
+
+PluginCurve::PluginCurve(QGraphicsObject *parent) :
+  QObject(parent), _pParent(parent)
 {
-  ui->setupUi(this);
-  createGraphics();
+  //_pStorey = storey;
+  _pModel = new PluginCurveModel(this,parent);
+  _pView = new PluginCurveView(parent,_pPresenter);
+  _pPresenter = new PluginCurvePresenter(this,_pModel,_pView);
+  connect(this,SIGNAL(stateChanged(bool)),_pPresenter,SIGNAL(stateChanged(bool)));
+  // Creates the last and first points
+//  _pPresenter->addPoint(_pPresenter->_limitRect.bottomLeft(),Vertical,false);
+//  _pPresenter->addPoint(_pPresenter->_limitRect.topRight(),Vertical,false);
+  // edition mode
+  // setEditionMode(mainWindow()->editionMode());
+  _pPresenter->setEditionMode(AreaSelectionMode); ///@todo Put this line in the presenter ?
 }
 
-void MainWindow::createGraphics()
+PluginCurve::~PluginCurve()
 {
-  _pView = ui->graphicsView;
-  QGraphicsScene *scene = new QGraphicsScene(_pView->rect(),0);
-  scene->setBackgroundBrush(Qt::gray);
-  _pView->setScene(scene);
-  QGraphicsRectItem *rect = new QGraphicsRectItem();
-  rect->setRect(0,0,200,200);
-  PluginCurve *plugincurve = new PluginCurve(0);
-//  PluginCurve *plugincurve = new PluginCurve(rect->toGraphicsObject());
-//  scene->addItem(rect);
-  scene->addItem(plugincurve->view());
-  rect->show();
-  _pView->update();
-  _pView->show();
+  delete _pPresenter;
+  delete _pView;
+  delete _pModel;
+  _pModel = NULL;
+  _pView = NULL;
+  _pPresenter = NULL;
 }
 
-MainWindow::~MainWindow()
+QGraphicsObject *PluginCurve::view()
 {
-  delete ui;
+  return _pView;
 }
