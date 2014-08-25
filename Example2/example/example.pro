@@ -20,10 +20,7 @@ HEADERS  += mainwindow.hpp\
 
 FORMS    += mainwindow.ui
 
-INCLUDEPATH += ../../plugincurve2
-
-
-
+INCLUDEPATH += ../../staticLib/plugincurve
 
 LIBS += -lxml2\
-        -L../../staticLib/build-plugincurve-Desktop_Qt_5_1_1_clang_64bit-Debug -lplugincurve
+        -L../../staticLib/build-plugincurve -lplugincurve

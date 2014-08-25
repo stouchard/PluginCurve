@@ -35,7 +35,7 @@ knowledge of the CeCILL license and that you accept its terms.
 #include <QCursor>
 #include "plugincurvemodel.hpp"
 #include "plugincurveview.hpp"
-#include "PluginCurvePoint.hpp"
+#include "plugincurvepoint.hpp"
 #include "plugincurvesection.hpp"
 
 

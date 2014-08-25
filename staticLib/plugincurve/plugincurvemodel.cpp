@@ -65,10 +65,6 @@ int PluginCurveModel::pointSize()
   return _points.size();
 }
 
-///@todo Mettre template dans util.h ? ailleur ?
-
-
-
 template<typename T1, typename T2>
 bool compare(const T1 &value1,const T2 &value2, bool (*(comparisonFunc)(const T1&,const T2&)))
 {
