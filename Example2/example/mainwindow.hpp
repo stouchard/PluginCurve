@@ -33,6 +33,7 @@ knowledge of the CeCILL license and that you accept its terms.
 
 #include <QMainWindow>
 #include <QGraphicsView>
+#include <QTextBrowser>
 class QGraphicsView;
 
 namespace Ui {
@@ -46,6 +47,7 @@ class MainWindow : public QMainWindow
 
 private:
   QGraphicsView *_pView;
+  QTextBrowser *_pTextBrowser;
   Ui::MainWindow *ui;
 
 public:
@@ -53,6 +55,11 @@ public:
   ~MainWindow();
 private:
   void createGraphics();
+  void createTextBrowser();
+
+public slots:
+  void pointCreated(QPointF point);
+  void pointDeleted(QPointF point);
 };
 
 #endif // MAINWINDOW_HPP

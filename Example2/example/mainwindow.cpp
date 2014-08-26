@@ -38,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
   ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
+  createTextBrowser();
   createGraphics();
 }
 
@@ -50,12 +51,32 @@ void MainWindow::createGraphics()
   QGraphicsRectItem *rect = new QGraphicsRectItem();
   rect->setRect(0,0,200,200);
   PluginCurve *plugincurve = new PluginCurve(0);
+  connect(plugincurve,SIGNAL(notifyPointCreated(QPointF)),this,SLOT(pointCreated(QPointF)));
+  connect(plugincurve,SIGNAL(notifyPointDeleted(QPointF)),this,SLOT(pointDeleted(QPointF)));
 //  PluginCurve *plugincurve = new PluginCurve(rect->toGraphicsObject());
 //  scene->addItem(rect);
   scene->addItem(plugincurve->view());
   rect->show();
   _pView->update();
   _pView->show();
+}
+
+void MainWindow::createTextBrowser()
+{
+  _pTextBrowser = ui->textBrowser;
+  _pTextBrowser->setReadOnly(true);
+}
+
+void MainWindow::pointCreated(QPointF point)
+{
+  QString str = QString("Point created : (%1 , %2)").arg(point.x()).arg(point.y());
+  _pTextBrowser->append(str);
+}
+
+void MainWindow::pointDeleted(QPointF point)
+{
+  QString str = QString("Point deleted : (%1 , %2)").arg(point.x()).arg(point.y());
+  _pTextBrowser->append(str);
 }
 
 MainWindow::~MainWindow()

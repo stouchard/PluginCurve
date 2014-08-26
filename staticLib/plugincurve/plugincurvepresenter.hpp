@@ -37,6 +37,7 @@ knowledge of the CeCILL license and that you accept its terms.
 #include "plugincurveview.hpp"
 #include "plugincurvepoint.hpp"
 #include "plugincurvesection.hpp"
+class PluginCurve;
 
 
 enum EditionMode
@@ -56,7 +57,8 @@ class PluginCurvePresenter : public QObject
 public:
  static const int POINTMINDIST= 4; // Minimal Distance on x axis between 2 points
  QRectF _limitRect; // Limit if the points' area in parent coordinates.
- QRectF _scale; // Contains the limits values. (MinXValue,MinYValue) (MaxXValue,MinXValue)
+ QRectF _scale; // indicates the value of the bottom left point and the topleft point.
+ /// @todo Ajouter un attribut scaletype : logarthmic/linear
 
 private:
   PluginCurveModel *_pModel;
@@ -81,7 +83,7 @@ private:
   // Returns the position correspondiing to the value val
   QPointF valueToPos(QPointF val);
 public:
-  PluginCurvePresenter(QObject *parent, PluginCurveModel *model, PluginCurveView *view);
+  PluginCurvePresenter(PluginCurve *parent, PluginCurveModel *model, PluginCurveView *view);
   ~PluginCurvePresenter();
   // Add a curve and updates source and dest points
   PluginCurveSection *addSection(PluginCurvePoint *source, PluginCurvePoint *dest);
@@ -109,6 +111,10 @@ signals:
   void changeCursor(QCursor cursor);
 // --> PluginCurvePoint
   void setAllFlags(bool b);
+// --> PluginCurve
+  void notifyPointCreated(QPointF value);
+  void notifyPointDeleted(QPointF value);
+
 public slots:
 // View -->
   void doubleClick(QGraphicsSceneMouseEvent *mouseEvent);

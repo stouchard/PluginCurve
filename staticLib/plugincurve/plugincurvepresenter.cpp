@@ -28,6 +28,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL license and that you accept its terms.
 */
 
+#include "plugincurve.hpp"
 #include "plugincurvepresenter.hpp"
 #include "plugincurveview.hpp"
 #include "plugincurvemodel.hpp"
@@ -39,7 +40,7 @@ knowledge of the CeCILL license and that you accept its terms.
 #include <QGraphicsItem>
 #include <QCursor>
 
-PluginCurvePresenter::PluginCurvePresenter(QObject *parent, PluginCurveModel *model, PluginCurveView *view) :
+PluginCurvePresenter::PluginCurvePresenter(PluginCurve *parent, PluginCurveModel *model, PluginCurveView *view) :
   QObject(parent),_pModel(model),_pView(view)
 {
   // ** Initialisation **
@@ -78,6 +79,10 @@ PluginCurvePresenter::PluginCurvePresenter(QObject *parent, PluginCurveModel *mo
   connect(_pView,SIGNAL(keyPressed(QKeyEvent *)),this,SLOT(keyPress(QKeyEvent *)));
   connect(_pView,SIGNAL(keyReleased(QKeyEvent *)),this,SLOT(keyRelease(QKeyEvent *)));
   connect(_pView,SIGNAL(viewSceneChanged(QGraphicsScene *)),this,SLOT(viewSceneChanged(QGraphicsScene *)));
+  // Presenter --> PluginCurve
+  connect(this,SIGNAL(notifyPointCreated(QPointF)),parent,SIGNAL(notifyPointCreated(QPointF)));
+  connect(this,SIGNAL(notifyPointDeleted(QPointF)),parent,SIGNAL(notifyPointDeleted(QPointF)));
+
 }
 
 PluginCurvePresenter::~PluginCurvePresenter()
@@ -297,6 +302,7 @@ PluginCurvePoint *PluginCurvePresenter::addPoint(QPointF qpoint, MobilityMode mo
     }
   // Instanciation and initialisation
   point = new PluginCurvePoint(_pView,newPos,posToValue(newPos),mobility,removable);
+  emit(notifyPointCreated(posToValue(newPos))); // Notify the user
   //Create a new curve, update previousPoint and point.
   if (previousPoint != nullptr)
     addSection(previousPoint,point);

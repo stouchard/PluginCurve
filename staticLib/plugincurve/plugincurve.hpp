@@ -55,6 +55,10 @@ signals :
   ///@todo connect storey signal to this one
   void stateChanged(bool b);
 
+  // Signals for the plugin users
+  void notifyPointCreated(QPointF value);
+  void notifyPointDeleted(QPointF value);
+
 public slots :
 };
 
