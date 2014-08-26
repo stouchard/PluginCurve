@@ -15,7 +15,7 @@
 
 
 
-PluginCurvePoint::PluginCurvePoint(PluginCurveView *parent, QPointF point, MobilityMode mobility, bool removable) :
+PluginCurvePoint::PluginCurvePoint(PluginCurveView *parent, QPointF point, QPointF value, MobilityMode mobility, bool removable) :
   QGraphicsObject(parent)
 {
   _color = Qt::gray; // Point's color
@@ -25,12 +25,23 @@ PluginCurvePoint::PluginCurvePoint(PluginCurveView *parent, QPointF point, Mobil
   setCacheMode(DeviceCoordinateCache);
   setFlag(ItemIsFocusable,false);
   setZValue(0);
+  setValue(value);
   setPos(point);
   setMobility(mobility); // Warning ! setMobility after setPos();
 }
 
 PluginCurvePoint::~PluginCurvePoint()
 {
+}
+
+void PluginCurvePoint::setValue(QPointF value)
+{
+    _value = value;
+}
+
+QPointF PluginCurvePoint::getValue()
+{
+    return _value;
 }
 
 MobilityMode PluginCurvePoint::mobility()

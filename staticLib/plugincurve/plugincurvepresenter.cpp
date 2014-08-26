@@ -43,6 +43,12 @@ PluginCurvePresenter::PluginCurvePresenter(QObject *parent, PluginCurveModel *mo
   QObject(parent),_pModel(model),_pView(view)
 {
   // ** Initialisation **
+  qreal minXValue = -1;
+  qreal minYValue = -100;
+  qreal maxXValue = 0;
+  qreal maxYValue = 100;
+  /// @todo prendre l'echelle en paramètre du constructeur (?)
+  _scale = QRectF(minXValue,minYValue,maxXValue-minXValue,maxYValue-minYValue);
   // Point's area
   _limitRect = QRectF(0 + PluginCurvePoint::SHAPERADIUS,
                       0 + PluginCurvePoint::SHAPERADIUS,
@@ -216,6 +222,23 @@ bool PluginCurvePresenter::enoughSpaceAfter(PluginCurvePoint *point)
     return (_limitRect.x() + _limitRect.width() - point->x() >= POINTMINDIST);
 }
 
+QPointF PluginCurvePresenter::posToValue(QPointF pos)
+{
+  QPointF val;
+  val.setX( (pos.x()-_limitRect.x())*_scale.width() /_limitRect.width() + _scale.x() );
+  //val.setY( _scale.height() + _scale.y() -  ((pos.y()-_limitRect.y())*_scale.height() /_limitRect.height() + _scale.y() ) );
+  val.setY( _scale.y() + (_limitRect.height() + _limitRect.y() - pos.y()) / _limitRect.height() * _scale.height());
+  return val;
+}
+
+QPointF PluginCurvePresenter::valueToPos(QPointF val)
+{
+  QPointF pos;
+  pos.setX( (val.x()-_scale.x())*_limitRect.width() / _scale.width() + _limitRect.x() );
+  pos.setY( (val.y()-_scale.y())*_limitRect.height() / _scale.height() + _limitRect.y());
+  return pos;
+}
+
 PluginCurveSection *PluginCurvePresenter::addSection(PluginCurvePoint *source, PluginCurvePoint *dest)
 {
   // Create the curve in the view
@@ -235,7 +258,6 @@ PluginCurvePoint *PluginCurvePresenter::addPoint(QPointF qpoint, MobilityMode mo
   PluginCurvePoint *point = nullptr;
   PluginCurvePoint *previousPoint = nullptr;
   PluginCurvePoint *nextPoint = nullptr;
-  PluginCurveSection *leftSection = nullptr;
   PluginCurveSection *rightSection = nullptr;
 
   // Where place the point in the list
@@ -274,10 +296,10 @@ PluginCurvePoint *PluginCurvePresenter::addPoint(QPointF qpoint, MobilityMode mo
                       qpoint.y());
     }
   // Instanciation and initialisation
-  point = new PluginCurvePoint(_pView,newPos,mobility,removable);
+  point = new PluginCurvePoint(_pView,newPos,posToValue(newPos),mobility,removable);
   //Create a new curve, update previousPoint and point.
   if (previousPoint != nullptr)
-    leftSection = addSection(previousPoint,point);
+    addSection(previousPoint,point);
   /// @todo Creer une fonction setSourcePoint / setDestPoint (pour regrouper ces trois lignes) ???
   //Modifie the old one and updates the points.
   if (nextPoint != nullptr)
@@ -324,7 +346,6 @@ void PluginCurvePresenter::removePoint(PluginCurvePoint *point)
     return;
   point->setSelected(false);
   PluginCurvePoint *previous = nullptr;
-  PluginCurvePoint *next = nullptr;
   PluginCurveSection *leftSection = point->leftSection();
   PluginCurveSection *rightSection = point->rightSection();
 //  point->setRightSection(nullptr);
@@ -337,7 +358,7 @@ void PluginCurvePresenter::removePoint(PluginCurvePoint *point)
     }
   if (rightSection != nullptr)
     {
-      next = rightSection->destPoint(); // else Null
+      //next = rightSection->destPoint(); // else Null
       if (previous != nullptr) // There is a previous point
         {
           rightSection->setSourcePoint(previous); // Keep the right curve, change its source point
@@ -500,6 +521,7 @@ void PluginCurvePresenter::keyRelease(QKeyEvent *keyEvent)
 
 void PluginCurvePresenter::viewSceneChanged(QGraphicsScene * scene)
 {
+  Q_UNUSED(scene);
   _limitRect = QRectF(0 + PluginCurvePoint::SHAPERADIUS,
                                           0 + PluginCurvePoint::SHAPERADIUS,
                                           _pView->boundingRect().width() - 2*PluginCurvePoint::SHAPERADIUS - 2,

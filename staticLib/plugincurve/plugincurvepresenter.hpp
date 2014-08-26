@@ -55,17 +55,14 @@ class PluginCurvePresenter : public QObject
   //Attributs
 public:
  static const int POINTMINDIST= 4; // Minimal Distance on x axis between 2 points
- QRectF _limitRect;
-// QRectF _limitRect = QRectF(0 + PluginCurvePoint::SHAPERADIUS,
-//                                  0 + PluginCurvePoint::SHAPERADIUS,
-//                                  _pView->boundingRect().width() - 2*PluginCurvePoint::SHAPERADIUS - 2,
-//                                  _pView->boundingRect().height() - 2*PluginCurvePoint::SHAPERADIUS); // Define the points area
+ QRectF _limitRect; // Limit if the points' area in parent coordinates.
+ QRectF _scale; // Contains the limits values. (MinXValue,MinYValue) (MaxXValue,MinXValue)
 
 private:
   PluginCurveModel *_pModel;
   PluginCurveView *_pView;
   ///@todo _editionMode=MainWindow->editionMode().
-  ///La valeur par défault doit etre celle choisi par l'utilisateur dans une autre widget (button) [Simon qui passe par là].
+  ///La valeur par défault doit etre celle choisi par l'utilisateur dans une autre widget (button) .
   EditionMode _editionMode = AreaSelectionMode; // Selection mode
   bool _pointCanCross; // Indicates if a point can cross an other one
   PluginCurvePoint *_lastCreatedPoint; // The last created point
@@ -79,7 +76,10 @@ private:
   bool enoughSpaceBefore(PluginCurvePoint *point);
   // Indicates if a point can be inserted after point
   bool enoughSpaceAfter(PluginCurvePoint *point);
-
+  // Returns the value corresponding to the position pos.
+  QPointF posToValue(QPointF pos);
+  // Returns the position correspondiing to the value val
+  QPointF valueToPos(QPointF val);
 public:
   PluginCurvePresenter(QObject *parent, PluginCurveModel *model, PluginCurveView *view);
   ~PluginCurvePresenter();

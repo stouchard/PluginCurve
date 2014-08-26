@@ -106,6 +106,9 @@ QVariant PluginCurveView::itemChange(GraphicsItemChange change, const QVariant &
     {
     case ItemSceneHasChanged:
       emit(viewSceneChanged(scene())); // The new scene is emitted
+      break;
+    default:
+      return QGraphicsItem::itemChange(change,value);
     }
   return QGraphicsItem::itemChange(change,value);
 }

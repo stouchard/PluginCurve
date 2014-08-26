@@ -32,6 +32,7 @@ protected:
   QColor _color; /*!< Point's color. */
   QColor _selectColor; /*!< Point's color when selected. */
 private:
+  QPointF _value; /*!< Point's value (Time,YValue). */
   MobilityMode _mobility; /*!< Point movement restriction. */
   qreal _fixedCoordinate; /*!< Fixed coordinate if point's mobility is vertical. */
   bool _removable; /*!< Indicate if the point is removable. */
@@ -53,17 +54,24 @@ public:
        /*!
          \param parent Point's parent, must be a PluginCurve view.
          \param point Point's initial position.
+         \param value Point's value.
          \param mobility Point's mobility.
          \param removable Indicates if the point can be removed.
        */
-    PluginCurvePoint(PluginCurveView *parent, QPointF point, MobilityMode mobility = Normal, bool removable = true);
+    PluginCurvePoint(PluginCurveView *parent, QPointF point, QPointF value, MobilityMode mobility = Normal, bool removable = true);
     ~PluginCurvePoint();
-    /*! Return point's mobility. A Normal point can be moved horizontaly and verticaly, a Vertical point can only be moved vertically.
+    /*! Sets the point's value to value.
+    */
+    void setValue(QPointF value);
+    /*! Returns the point's value.
+    */
+    QPointF getValue();
+    /*! Returns point's mobility. A Normal point can be moved horizontaly and verticaly, a Vertical point can only be moved vertically.
      * The fixed coordinate of the point is indicated by fixedCoordinate().
     \sa setMobility() , fixedCoordinate()
     */
     MobilityMode mobility();
-    /*! Set the point's mobility to mode. If mode value is Vertical, the fixed coordinate is fixed to point's x actual value.
+    /*! Sets the point's mobility to mode. If mode value is Vertical, the fixed coordinate is fixed to point's x actual value.
     \sa mobility() , fixedCoordinate()
     */
     void setMobility(MobilityMode mode);
@@ -71,7 +79,7 @@ public:
      \sa mobility() , setMobility()
     */
     qreal fixedCoordinate();
-    /*! Highlight the point. If b value is true, the point is hilihgted. In the other case, the point is print normaly. */
+    /*! Highlights the point. If b value is true, the point is hilihgted. In the other case, the point is print normaly. */
     void highlight(bool b);
     /*! Indicates if the point can be cancelled. A point can not be removed  if this function returns false.
     \sa setRemovable();
