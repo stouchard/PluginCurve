@@ -111,10 +111,14 @@ signals:
   void changeCursor(QCursor cursor);
 // --> PluginCurvePoint
   void setAllFlags(bool b);
-// --> PluginCurve
+// --> PluginCurve, Signals for plugin users
   void notifyPointCreated(QPointF value);
   void notifyPointDeleted(QPointF value);
-
+  void notifyPointMoved(QPointF oldVal, QPointF newVal);
+  void notifySectionCreated(QPointF source, QPointF dest, qreal coef);
+  void notifySectionChanged(QPointF source, QPointF dest, qreal coef);
+  void notifySectionDeleted(QPointF source, QPointF dest);
+  void notifySectionMoved(QPointF oldSource, QPointF oldDest, QPointF newSource, QPointF newDest);
 public slots:
 // View -->
   void doubleClick(QGraphicsSceneMouseEvent *mouseEvent);
@@ -126,6 +130,7 @@ public slots:
   void viewSceneChanged(QGraphicsScene *);
 // PluginCurvePoint -->
   void pointPositionHasChanged(PluginCurvePoint *point);
+  void pointPositionIsChanging(PluginCurvePoint *point);
 
 };
 

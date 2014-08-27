@@ -60,6 +60,9 @@ private:
 public slots:
   void pointCreated(QPointF point);
   void pointDeleted(QPointF point);
+  void pointMoved(QPointF oldPos, QPointF newPos);
+  void sectionCreated(QPointF source, QPointF dest, qreal coef);
+  void sectionDeleted(QPointF source, QPointF dest);
 };
 
 #endif // MAINWINDOW_HPP

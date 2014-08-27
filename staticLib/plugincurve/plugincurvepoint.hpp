@@ -43,6 +43,7 @@ private:
   // Signals
 signals:
     void pointPositionHasChanged(PluginCurvePoint *);
+    void pointPositionIsChanging(PluginCurvePoint *);
 
   // Slots
 public slots :

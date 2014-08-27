@@ -82,6 +82,11 @@ PluginCurvePresenter::PluginCurvePresenter(PluginCurve *parent, PluginCurveModel
   // Presenter --> PluginCurve
   connect(this,SIGNAL(notifyPointCreated(QPointF)),parent,SIGNAL(notifyPointCreated(QPointF)));
   connect(this,SIGNAL(notifyPointDeleted(QPointF)),parent,SIGNAL(notifyPointDeleted(QPointF)));
+  connect(this,SIGNAL(notifyPointMoved(QPointF, QPointF)),parent,SIGNAL(notifyPointMoved(QPointF, QPointF)));
+  connect(this,SIGNAL(notifySectionCreated(QPointF, QPointF, qreal)),parent,SIGNAL(notifySectionCreated(QPointF, QPointF, qreal)));
+  connect(this,SIGNAL(notifySectionChanged(QPointF, QPointF, qreal)),parent,SIGNAL(notifySectionChanged(QPointF, QPointF, qreal)));
+  connect(this,SIGNAL(notifySectionDeleted(QPointF, QPointF)),parent,SIGNAL(notifySectionDeleted(QPointF, QPointF)));
+  connect(this,SIGNAL(notifySectionMoved(QPointF, QPointF, QPointF, QPointF)),parent,SIGNAL(notifySectionMoved(QPointF, QPointF, QPointF, QPointF)));
 
 }
 
@@ -252,6 +257,7 @@ PluginCurveSection *PluginCurvePresenter::addSection(PluginCurvePoint *source, P
   dest->setLeftSection(section);
   // Emit signal for modifie model
   emit (sectionAdded(section));
+  emit (notifySectionCreated(section->sourcePoint()->getValue(),section->destPoint()->getValue(),0));
   connect(this,SIGNAL(setAllFlags(bool)),section,SLOT(setAllFlags(bool)));
   connect(section,SIGNAL(doubleClicked(QGraphicsSceneMouseEvent*)),this,SLOT(doubleClick(QGraphicsSceneMouseEvent*)));
   return section;
@@ -326,6 +332,7 @@ PluginCurvePoint *PluginCurvePresenter::addPoint(QPointF qpoint, MobilityMode mo
 
   emit(pointAdded(index+1,point));
   connect(point,SIGNAL(pointPositionHasChanged(PluginCurvePoint *)),this,SLOT(pointPositionHasChanged(PluginCurvePoint *)));
+  connect(point,SIGNAL(pointPositionIsChanging(PluginCurvePoint*)),this,SLOT(pointPositionIsChanging(PluginCurvePoint*)));
   connect(this,SIGNAL(setAllFlags(bool)),point,SLOT(setAllFlags(bool)));
   return point;
 }
@@ -342,6 +349,7 @@ void PluginCurvePresenter::removeSection(PluginCurveSection *section)
     dest->setLeftSection(nullptr);
   //section->scene()->removeItem(section);
   emit(sectionRemoved(section));
+  emit(notifySectionDeleted(section->sourcePoint()->getValue(),section->destPoint()->getValue()));
   //section->hide();
   section->deleteLater();
 }
@@ -385,6 +393,7 @@ void PluginCurvePresenter::removePoint(PluginCurvePoint *point)
 //      next->setLeftSection(rightSection);
 //    }
   emit (pointRemoved(point));
+  emit (notifyPointDeleted(point->getValue()));
   //point->scene()->removeItem(point);
   //point->hide();
   point->deleteLater();
@@ -534,7 +543,7 @@ void PluginCurvePresenter::viewSceneChanged(QGraphicsScene * scene)
                                           _pView->boundingRect().height() - 2*PluginCurvePoint::SHAPERADIUS);
 }
 
-void PluginCurvePresenter::pointPositionHasChanged(PluginCurvePoint *point)
+void PluginCurvePresenter::pointPositionIsChanging(PluginCurvePoint *point)
 {
   if (point == nullptr)
     return;
@@ -587,4 +596,13 @@ void PluginCurvePresenter::pointPositionHasChanged(PluginCurvePoint *point)
     }
   //Adjust the Curves position.
   point->adjust();
+}
+
+void PluginCurvePresenter::pointPositionHasChanged(PluginCurvePoint *point)
+{
+    // Update the point value
+    QPointF oldvalue = point->getValue();
+    point->setValue(posToValue(point->pos()));
+    // Notify the plugin users
+    emit(notifyPointMoved(oldvalue,point->getValue()));
 }

@@ -202,6 +202,7 @@ void PluginCurvePoint::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void PluginCurvePoint::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+  emit(pointPositionHasChanged(this));
   QGraphicsItem::mouseReleaseEvent(event);
 }
 
@@ -232,7 +233,7 @@ QVariant PluginCurvePoint::itemChange(GraphicsItemChange change, const QVariant 
 {
   if (change == ItemPositionHasChanged)
     {
-      emit (pointPositionHasChanged(this));
+      emit (pointPositionIsChanging(this));
     }
   if (change == ItemSelectedChange)
     {
