@@ -29,17 +29,21 @@
 */
 
 #include "plugincurveview.hpp"
+#include "plugincurvegrid.hpp"
+#include "plugincurvepresenter.hpp"
 #include <QPainter>
 #include <QRectF>
 #include <QGraphicsScene>
 #include <QCursor>
 #include <iostream>
 
-PluginCurveView::PluginCurveView(QGraphicsObject *parent, QObject *presenter)
+
+PluginCurveView::PluginCurveView(QGraphicsObject *parent, PluginCurvePresenter *presenter)
   : QGraphicsObject(parent), _pParent(parent), _pPresenter(presenter)
 {
   _pSelectionRectangle = new QGraphicsRectItem(QRect(QPoint(),QSize()),this);
   _pSelectionRectangle->hide();
+  _pGrid = new PluginCurveGrid(this,nullptr);
   setFlag(ItemIsFocusable);
   setFocus();
 }

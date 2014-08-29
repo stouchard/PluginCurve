@@ -45,6 +45,16 @@ void PluginCurveSection::setDestPoint(PluginCurvePoint *autoPoint)
   adjust();
 }
 
+qreal PluginCurveSection::bendingCoef()
+{
+    return _coef;
+}
+
+void PluginCurveSection::setBendingCoef(qreal coef)
+{
+    _coef = coef;
+}
+
 void PluginCurveSection::highlight(bool b)
 {
   _highlight = b;
@@ -109,7 +119,7 @@ void PluginCurveSection::adjust()
 
 void PluginCurveSection::setAllFlags(bool b)
 {
-  setFlag(QGraphicsItem::ItemIsMovable,b);
+  //setFlag(QGraphicsItem::ItemIsMovable,b);
   setFlag(QGraphicsItem::ItemIsSelectable,b);
   setFlag(QGraphicsItem::ItemSendsGeometryChanges,b);
 }

@@ -36,19 +36,20 @@
 #include <QCursor>
 
 class QGraphicsItem;
-class QGraphicsPathItem;
-class TimeboxStorey;
+class PluginCurvePresenter;
+class PluginCurveGrid;
 
 class PluginCurveView : public QGraphicsObject
 {
   Q_OBJECT
 
 private:
-  QGraphicsObject *_pParent; // Link to the parent storey
-  QObject *_pPresenter; // Link to the presenter
+  QGraphicsObject *_pParent; // Pointer to the parent storey
+  PluginCurvePresenter *_pPresenter; // Pointer to the presenter
   QGraphicsRectItem *_pSelectionRectangle; // Selection Rectangle
+  PluginCurveGrid *_pGrid; // Pointer to the grid
 public:
-  PluginCurveView(QGraphicsObject *parent, QObject *presenter);
+  PluginCurveView(QGraphicsObject *parent, PluginCurvePresenter *presenter);
   QGraphicsRectItem *selectionRectangle();
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
   QRectF boundingRect() const;

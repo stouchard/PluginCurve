@@ -9,51 +9,76 @@
 class PluginCurveSection : public QGraphicsObject
 {
  Q_OBJECT
+
+   /*!
+   *  This class is a representation of a curve section of a PluginCurve.
+   *  Permits to paint a PluginCurveSection. Contains pointers to destination and source points. @n
+   *
+   *  @brief Section of a PluginCurve
+   *  @author Simon Touchard, Myriam Desainte-Catherine
+   *  @date 2014
+   */
+
+//Attributes
+protected:
+    static const int SHAPEHEIGHT = 5; /*!< Defines the height of the setion's shape. */
+    PluginCurvePoint *_pSourcePoint; /*!< Pointer of the source point (left point). */
+    PluginCurvePoint *_pDestPoint; /*!< Pointer of the destination point (right point). */
+    bool _highlight{}; /*!< Indicates if the points is highlighted. True : highlighted. False : Not Highlighted */
+    QColor _color; /*!< Section's color. */
+    QColor _selectColor; /*!< Section's color when selected */
+    qreal _coef; /*!< Bending coefficient */
+// Signals and slots
+signals:
+    void doubleClicked(QGraphicsSceneMouseEvent *event); /*!< Notifies that the user double clicked the section.*/
+public slots:
+    void setAllFlags(bool b); /*! Changes the flags.*/
+
+//Methods
 public:
-    // Constructor. Source and destination points must be modified consequently
+    //! Constructs a PluginCurveSection. The source and destination points must be modified after the instatiation of the section consequently.
+       /*!
+         \param parent Section's parent.
+         \param source The left point. It musn't be null.
+         \param dest The right point. It musn't be null.
+       */
     PluginCurveSection(PluginCurveView *parent, PluginCurvePoint *source, PluginCurvePoint *dest); // Parent : PluginCurvePoint ? GraphicsCurveView ?
     ~PluginCurveSection();
-    // Return source point
+    /*! Returns the source point. */
     PluginCurvePoint *sourcePoint();
-    // return destination point;
+    /*! Returns the destination point. */
     PluginCurvePoint *destPoint();
-    // Modifie the source point and adjust the curve. The point must be modified consequently
+    /*! Modifies the source point and adjust the section. The point must be modified consequently. */
     void setSourcePoint(PluginCurvePoint *autoPoint);
-    // Modifie the destination point and adjust the curve. The point must be modified consequently
+    /*! Modifies the destination point and adjust the destination. The point must be modified consequently */
     void setDestPoint(PluginCurvePoint *autoPoint);
-    // Highlight the item
+    /*! Returns the bending coefficient. */
+    qreal bendingCoef();
+    /*! Sets the bending coefficient. */
+    void setBendingCoef(qreal coef);
+    /*! Highlights the section. */
     void highlight(bool b);
-    // Returns the point's color
+    /*! Returns the point's color. */
     QColor color();
-    // Returns the point's color when selected
+    /*! Returns the point's color when selected. */
     QColor selectColor();
-    // Adjust the curve position
+    /*! Adjusts the curve position */
     void adjust();
-    // Bounding rectangle;
+    /*! Returns the bounding rectangle. */
     virtual QRectF boundingRect() const = 0;
-    // Shape
+    /*! Returns the section's shape. */
     virtual QPainterPath shape() const = 0;
-    // Section's path
+    /*! Returns the section's path. */
     virtual QPainterPath path() const = 0;
-    // Paint the curve
+    /*! Paints the curve. */
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) = 0;
 
 protected:
-    static const int SHAPEHEIGHT = 5;
-    PluginCurvePoint *_pSourcePoint;
-    PluginCurvePoint *_pDestPoint;
-    bool _highlight{};
-    QColor _color; // Section's color
-    QColor _selectColor; // Section's color when selected
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-signals:
-    void doubleClicked(QGraphicsSceneMouseEvent *event);
-public slots:
-    void setAllFlags(bool b);
 
 
 

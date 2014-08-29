@@ -42,8 +42,8 @@ private:
 
   // Signals
 signals:
-    void pointPositionHasChanged(PluginCurvePoint *);
-    void pointPositionIsChanging(PluginCurvePoint *);
+    void pointPositionHasChanged(); /*!< Notifies that the points selected has been released. */
+    void pointPositionIsChanging(PluginCurvePoint *); /*!< Notifies that the point is moving. */
 
   // Slots
 public slots :

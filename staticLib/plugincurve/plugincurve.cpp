@@ -34,7 +34,6 @@ knowledge of the CeCILL license and that you accept its terms.
 #include "plugincurvemodel.hpp"
 #include "plugincurvepresenter.hpp"
 
-
 PluginCurve::PluginCurve(QGraphicsObject *parent) :
   QObject(parent), _pParent(parent)
 {

@@ -37,6 +37,7 @@ knowledge of the CeCILL license and that you accept its terms.
 #include "plugincurveview.hpp"
 #include "plugincurvepoint.hpp"
 #include "plugincurvesection.hpp"
+#include "plugincurvemap.hpp"
 class PluginCurve;
 
 
@@ -55,9 +56,10 @@ class PluginCurvePresenter : public QObject
   Q_OBJECT
   //Attributs
 public:
- static const int POINTMINDIST= 4; // Minimal Distance on x axis between 2 points
+ static const int POINTMINDIST= 4; // Minimal Distance on x axis between 2 points.
  QRectF _limitRect; // Limit if the points' area in parent coordinates.
  QRectF _scale; // indicates the value of the bottom left point and the topleft point.
+ PluginCurveMap * _pMap; // Transform device in point coordinates to paint coordinates and vice-versa.
  /// @todo Ajouter un attribut scaletype : logarthmic/linear
 
 private:
@@ -78,10 +80,6 @@ private:
   bool enoughSpaceBefore(PluginCurvePoint *point);
   // Indicates if a point can be inserted after point
   bool enoughSpaceAfter(PluginCurvePoint *point);
-  // Returns the value corresponding to the position pos.
-  QPointF posToValue(QPointF pos);
-  // Returns the position correspondiing to the value val
-  QPointF valueToPos(QPointF val);
 public:
   PluginCurvePresenter(PluginCurve *parent, PluginCurveModel *model, PluginCurveView *view);
   ~PluginCurvePresenter();
@@ -95,7 +93,10 @@ public:
   void removePoint(PluginCurvePoint *point);
   // Change the edition mode
   void setEditionMode(EditionMode editionMode);
-
+  // Returns the scale rectangle. It represent the limmit of point's value
+  QRectF scaleRect();
+  // Return the path of the grid;
+  QPainterPath gridPath();
 signals:
 // --> Model
   void stateChanged(bool b);
@@ -129,7 +130,7 @@ public slots:
   void keyRelease(QKeyEvent *keyEvent);
   void viewSceneChanged(QGraphicsScene *);
 // PluginCurvePoint -->
-  void pointPositionHasChanged(PluginCurvePoint *point);
+  void pointPositionHasChanged();
   void pointPositionIsChanging(PluginCurvePoint *point);
 
 };

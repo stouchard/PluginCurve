@@ -56,6 +56,7 @@ void MainWindow::createGraphics()
   connect(plugincurve,SIGNAL(notifyPointMoved(QPointF,QPointF)),this,SLOT(pointMoved(QPointF,QPointF)));
   connect(plugincurve,SIGNAL(notifySectionCreated(QPointF,QPointF,qreal)),this,SLOT(sectionCreated(QPointF,QPointF,qreal)));
   connect(plugincurve,SIGNAL(notifySectionDeleted(QPointF,QPointF)),this,SLOT(sectionDeleted(QPointF,QPointF)));
+  connect(plugincurve,SIGNAL(notifySectionMoved(QPointF,QPointF,QPointF,QPointF)),this,SLOT(sectionMoved(QPointF,QPointF,QPointF,QPointF)));
 //  PluginCurve *plugincurve = new PluginCurve(rect->toGraphicsObject());
 //  scene->addItem(rect);
   scene->addItem(plugincurve->view());
@@ -101,6 +102,16 @@ void MainWindow::sectionDeleted(QPointF source, QPointF dest)
 
   QString str = QString("Section deleted (%1 , %2) - (%3 , %4)")
               .arg(source.x()).arg(source.y()).arg(dest.x()).arg(dest.y());
+  _pTextBrowser->append(str);
+}
+
+void MainWindow::sectionMoved(QPointF oldSource, QPointF oldDest, QPointF newSource, QPointF newDest)
+{
+  QString str = QString("Section moved from (%1 , %2) - (%3 , %4) to (%5 , %6) - (%7 , %8)")
+            .arg(oldSource.x()).arg(oldSource.y())
+            .arg(oldDest.x()).arg(oldDest.y())
+            .arg(newSource.x()).arg(newSource.y())
+            .arg(newDest.x()).arg(newDest.y());
   _pTextBrowser->append(str);
 }
 

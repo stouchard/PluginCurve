@@ -48,13 +48,16 @@ PluginCurvePresenter::PluginCurvePresenter(PluginCurve *parent, PluginCurveModel
   qreal minYValue = -100;
   qreal maxXValue = 0;
   qreal maxYValue = 100;
-  /// @todo prendre l'echelle en paramètre du constructeur (?)
-  _scale = QRectF(minXValue,minYValue,maxXValue-minXValue,maxYValue-minYValue);
   // Point's area
+  /// @todo prendre l'echelle en paramètre du constructeur (?)
+  // Point's area in scale coordinate
+  _scale = QRectF(minXValue,minYValue,maxXValue-minXValue,maxYValue-minYValue);
   _limitRect = QRectF(0 + PluginCurvePoint::SHAPERADIUS,
                       0 + PluginCurvePoint::SHAPERADIUS,
                       _pView->boundingRect().width() - 2*PluginCurvePoint::SHAPERADIUS - 2,
-                      _pView->boundingRect().height() - 2*PluginCurvePoint::SHAPERADIUS); // Define the points area
+                      _pView->boundingRect().height() - 2*PluginCurvePoint::SHAPERADIUS); // Define the points area in paint coordinate
+  //
+  _pMap = new PluginCurveMap(_scale,_limitRect);
   // Points behavior
   //_pointCanCross = mainWindow()->pointCanCross();
   _pointCanCross=true;
@@ -97,6 +100,7 @@ PluginCurvePresenter::~PluginCurvePresenter()
     {
       removePoint(point);
     }
+  delete _pMap;
 }
 
   ///@todo customize cursors !!!
@@ -126,7 +130,11 @@ void PluginCurvePresenter::setEditionMode(EditionMode editionMode)
       break;
     }
   _editionMode = editionMode;
+}
 
+QRectF PluginCurvePresenter::scaleRect()
+{
+    return _scale;
 }
 
 void PluginCurvePresenter::crossByLeft(PluginCurvePoint *point)
@@ -232,23 +240,6 @@ bool PluginCurvePresenter::enoughSpaceAfter(PluginCurvePoint *point)
     return (_limitRect.x() + _limitRect.width() - point->x() >= POINTMINDIST);
 }
 
-QPointF PluginCurvePresenter::posToValue(QPointF pos)
-{
-  QPointF val;
-  val.setX( (pos.x()-_limitRect.x())*_scale.width() /_limitRect.width() + _scale.x() );
-  //val.setY( _scale.height() + _scale.y() -  ((pos.y()-_limitRect.y())*_scale.height() /_limitRect.height() + _scale.y() ) );
-  val.setY( _scale.y() + (_limitRect.height() + _limitRect.y() - pos.y()) / _limitRect.height() * _scale.height());
-  return val;
-}
-
-QPointF PluginCurvePresenter::valueToPos(QPointF val)
-{
-  QPointF pos;
-  pos.setX( (val.x()-_scale.x())*_limitRect.width() / _scale.width() + _limitRect.x() );
-  pos.setY( (val.y()-_scale.y())*_limitRect.height() / _scale.height() + _limitRect.y());
-  return pos;
-}
-
 PluginCurveSection *PluginCurvePresenter::addSection(PluginCurvePoint *source, PluginCurvePoint *dest)
 {
   // Create the curve in the view
@@ -257,7 +248,7 @@ PluginCurveSection *PluginCurvePresenter::addSection(PluginCurvePoint *source, P
   dest->setLeftSection(section);
   // Emit signal for modifie model
   emit (sectionAdded(section));
-  emit (notifySectionCreated(section->sourcePoint()->getValue(),section->destPoint()->getValue(),0));
+  emit (notifySectionCreated(section->sourcePoint()->getValue(),section->destPoint()->getValue(),section->bendingCoef()));
   connect(this,SIGNAL(setAllFlags(bool)),section,SLOT(setAllFlags(bool)));
   connect(section,SIGNAL(doubleClicked(QGraphicsSceneMouseEvent*)),this,SLOT(doubleClick(QGraphicsSceneMouseEvent*)));
   return section;
@@ -307,8 +298,8 @@ PluginCurvePoint *PluginCurvePresenter::addPoint(QPointF qpoint, MobilityMode mo
                       qpoint.y());
     }
   // Instanciation and initialisation
-  point = new PluginCurvePoint(_pView,newPos,posToValue(newPos),mobility,removable);
-  emit(notifyPointCreated(posToValue(newPos))); // Notify the user
+  point = new PluginCurvePoint(_pView,newPos,_pMap->paintToScale(newPos),mobility,removable);
+  emit(notifyPointCreated(_pMap->paintToScale(newPos))); // Notify the user
   //Create a new curve, update previousPoint and point.
   if (previousPoint != nullptr)
     addSection(previousPoint,point);
@@ -319,19 +310,21 @@ PluginCurvePoint *PluginCurvePresenter::addPoint(QPointF qpoint, MobilityMode mo
       rightSection = nextPoint->leftSection();
       if (rightSection != nullptr)
         {
+          QPointF oldSourcePoint =  previousPoint->getValue();
+          QPointF oldDestPoint = nextPoint->getValue();
           rightSection->setSourcePoint(point);
           point->setRightSection(rightSection);
+          emit(notifySectionMoved(oldSourcePoint,oldDestPoint,point->getValue(),oldDestPoint));
         }
       else // No curve, a new one need to be created
         {
           rightSection = addSection(point,nextPoint);
         }
     }
-
   // Add points and curves in the view
 
   emit(pointAdded(index+1,point));
-  connect(point,SIGNAL(pointPositionHasChanged(PluginCurvePoint *)),this,SLOT(pointPositionHasChanged(PluginCurvePoint *)));
+  connect(point,SIGNAL(pointPositionHasChanged()),this,SLOT(pointPositionHasChanged()));
   connect(point,SIGNAL(pointPositionIsChanging(PluginCurvePoint*)),this,SLOT(pointPositionIsChanging(PluginCurvePoint*)));
   connect(this,SIGNAL(setAllFlags(bool)),point,SLOT(setAllFlags(bool)));
   return point;
@@ -541,6 +534,8 @@ void PluginCurvePresenter::viewSceneChanged(QGraphicsScene * scene)
                                           0 + PluginCurvePoint::SHAPERADIUS,
                                           _pView->boundingRect().width() - 2*PluginCurvePoint::SHAPERADIUS - 2,
                                           _pView->boundingRect().height() - 2*PluginCurvePoint::SHAPERADIUS);
+  _pMap->setPaintRect(_limitRect);
+
 }
 
 void PluginCurvePresenter::pointPositionIsChanging(PluginCurvePoint *point)
@@ -598,11 +593,23 @@ void PluginCurvePresenter::pointPositionIsChanging(PluginCurvePoint *point)
   point->adjust();
 }
 
-void PluginCurvePresenter::pointPositionHasChanged(PluginCurvePoint *point)
+void PluginCurvePresenter::pointPositionHasChanged()
 {
-    // Update the point value
-    QPointF oldvalue = point->getValue();
-    point->setValue(posToValue(point->pos()));
-    // Notify the plugin users
-    emit(notifyPointMoved(oldvalue,point->getValue()));
+    QListIterator<PluginCurvePoint *> iterator(_pModel->points());
+    PluginCurvePoint *point;
+    //QGraphicsItem *item;
+    while (iterator.hasNext())
+      {
+        point = iterator.next();
+        if (point != nullptr && point->isSelected())
+          {
+            // Update the point value
+            QPointF oldvalue = point->getValue();
+            point->setValue(_pMap->paintToScale(point->pos()));
+            // Notify the plugin users
+            emit(notifyPointMoved(oldvalue,point->getValue()));
+            //emit(notifySectionMoved());
+          }
+      }
+
 }

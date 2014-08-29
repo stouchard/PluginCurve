@@ -24,7 +24,7 @@ PluginCurvePoint::PluginCurvePoint(PluginCurveView *parent, QPointF point, QPoin
   setAcceptHoverEvents(true);
   setCacheMode(DeviceCoordinateCache);
   setFlag(ItemIsFocusable,false);
-  setZValue(0);
+  setZValue(1);
   setValue(value);
   setPos(point);
   setMobility(mobility); // Warning ! setMobility after setPos();
@@ -202,7 +202,8 @@ void PluginCurvePoint::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void PluginCurvePoint::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-  emit(pointPositionHasChanged(this));
+  if (event->buttonDownScenePos(Qt::LeftButton) != event->scenePos()) // If the point has been moved.
+    emit(pointPositionHasChanged());
   QGraphicsItem::mouseReleaseEvent(event);
 }
 
@@ -228,7 +229,6 @@ void PluginCurvePoint::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
   QGraphicsItem::hoverLeaveEvent(event);
 }
 
-/// @todo utiliser le signal pointPositionHasChanged !
 QVariant PluginCurvePoint::itemChange(GraphicsItemChange change, const QVariant &value)
 {
   if (change == ItemPositionHasChanged)
