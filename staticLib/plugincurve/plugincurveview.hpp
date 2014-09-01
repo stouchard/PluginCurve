@@ -38,6 +38,7 @@
 class QGraphicsItem;
 class PluginCurvePresenter;
 class PluginCurveGrid;
+class PluginCurveMap;
 
 class PluginCurveView : public QGraphicsObject
 {
@@ -47,9 +48,9 @@ private:
   QGraphicsObject *_pParent; // Pointer to the parent storey
   PluginCurvePresenter *_pPresenter; // Pointer to the presenter
   QGraphicsRectItem *_pSelectionRectangle; // Selection Rectangle
-  PluginCurveGrid *_pGrid; // Pointer to the grid
 public:
   PluginCurveView(QGraphicsObject *parent, PluginCurvePresenter *presenter);
+  ~PluginCurveView();
   QGraphicsRectItem *selectionRectangle();
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
   QRectF boundingRect() const;

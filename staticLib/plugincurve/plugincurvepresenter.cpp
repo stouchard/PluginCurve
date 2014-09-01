@@ -35,6 +35,8 @@ knowledge of the CeCILL license and that you accept its terms.
 #include "plugincurvesection.hpp"
 #include "plugincurvesectionlinear.hpp"
 #include "plugincurvepoint.hpp"
+#include "plugincurvemap.hpp"
+#include "plugincurvegrid.hpp"
 #include <QGraphicsSceneEvent>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
@@ -58,6 +60,7 @@ PluginCurvePresenter::PluginCurvePresenter(PluginCurve *parent, PluginCurveModel
                       _pView->boundingRect().height() - 2*PluginCurvePoint::SHAPERADIUS); // Define the points area in paint coordinate
   //
   _pMap = new PluginCurveMap(_scale,_limitRect);
+  _pGrid = new PluginCurveGrid(_pView,_pMap);
   // Points behavior
   //_pointCanCross = mainWindow()->pointCanCross();
   _pointCanCross=true;
@@ -101,6 +104,7 @@ PluginCurvePresenter::~PluginCurvePresenter()
       removePoint(point);
     }
   delete _pMap;
+  delete _pGrid;
 }
 
   ///@todo customize cursors !!!
@@ -298,6 +302,9 @@ PluginCurvePoint *PluginCurvePresenter::addPoint(QPointF qpoint, MobilityMode mo
                       qpoint.y());
     }
   // Instanciation and initialisation
+  // -----> DELETE
+  //newPos = _pGrid->nearestMagnetPoint(newPos);
+  // <----- DELETE
   point = new PluginCurvePoint(_pView,newPos,_pMap->paintToScale(newPos),mobility,removable);
   emit(notifyPointCreated(_pMap->paintToScale(newPos))); // Notify the user
   //Create a new curve, update previousPoint and point.

@@ -39,7 +39,7 @@ knowledge of the CeCILL license and that you accept its terms.
 #include "plugincurvesection.hpp"
 #include "plugincurvemap.hpp"
 class PluginCurve;
-
+class PluginCurveGrid;
 
 enum EditionMode
 {
@@ -57,12 +57,12 @@ class PluginCurvePresenter : public QObject
   //Attributs
 public:
  static const int POINTMINDIST= 4; // Minimal Distance on x axis between 2 points.
- QRectF _limitRect; // Limit if the points' area in parent coordinates.
- QRectF _scale; // indicates the value of the bottom left point and the topleft point.
- PluginCurveMap * _pMap; // Transform device in point coordinates to paint coordinates and vice-versa.
- /// @todo Ajouter un attribut scaletype : logarthmic/linear
-
 private:
+ QRectF _limitRect; // Limit if the points' area in parent coordinates.
+ QRectF _scale; // Indicates the value of the bottom left point and the topleft point.
+ PluginCurveMap *_pMap; // Transform device in point coordinates to paint coordinates and vice-versa.
+ PluginCurveGrid *_pGrid; // The grid;
+ /// @todo Ajouter un attribut scaletype : logarthmic/linear
   PluginCurveModel *_pModel;
   PluginCurveView *_pView;
   ///@todo _editionMode=MainWindow->editionMode().
@@ -93,10 +93,9 @@ public:
   void removePoint(PluginCurvePoint *point);
   // Change the edition mode
   void setEditionMode(EditionMode editionMode);
-  // Returns the scale rectangle. It represent the limmit of point's value
+  // Returns the scale rectangle. It represents the limmit of point's value.
   QRectF scaleRect();
-  // Return the path of the grid;
-  QPainterPath gridPath();
+
 signals:
 // --> Model
   void stateChanged(bool b);

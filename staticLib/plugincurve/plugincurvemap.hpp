@@ -24,6 +24,10 @@ public:
     QPointF scaleToPaint(QPointF val);
     /*! Transform a point from paint to scale coordinates. */
     QPointF paintToScale(QPointF pos);
+    /*! Returns the point's area in paint coordinate */
+    QRectF paintRect();
+    /*! Returns the point's area in scale coordinate */
+    QRectF scaleRect();
     /*! Set the point's area in paint coordinate. */
     void setScaleRect(QRectF scaleRect);
     /*! Set the point's area in scale coordinate. */

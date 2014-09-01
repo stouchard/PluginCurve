@@ -38,6 +38,7 @@ knowledge of the CeCILL license and that you accept its terms.
 PluginCurveSectionLinear::PluginCurveSectionLinear(PluginCurveView *parent, PluginCurvePoint *source, PluginCurvePoint *dest) :
   PluginCurveSection(parent,source,dest)
 {
+  _coef = 0;
   setFlag(ItemIsFocusable,false); // Useless.
 }
 

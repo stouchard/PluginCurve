@@ -31,6 +31,7 @@
 #include "plugincurveview.hpp"
 #include "plugincurvegrid.hpp"
 #include "plugincurvepresenter.hpp"
+#include "plugincurvemap.hpp"
 #include <QPainter>
 #include <QRectF>
 #include <QGraphicsScene>
@@ -43,9 +44,13 @@ PluginCurveView::PluginCurveView(QGraphicsObject *parent, PluginCurvePresenter *
 {
   _pSelectionRectangle = new QGraphicsRectItem(QRect(QPoint(),QSize()),this);
   _pSelectionRectangle->hide();
-  _pGrid = new PluginCurveGrid(this,nullptr);
   setFlag(ItemIsFocusable);
   setFocus();
+}
+
+PluginCurveView::~PluginCurveView()
+{
+    delete _pSelectionRectangle;
 }
 
 QGraphicsRectItem *PluginCurveView::selectionRectangle()
