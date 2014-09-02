@@ -41,7 +41,6 @@ PluginCurve::PluginCurve(QGraphicsObject *parent) :
   _pModel = new PluginCurveModel(this,parent);
   _pView = new PluginCurveView(parent,_pPresenter);
   _pPresenter = new PluginCurvePresenter(this,_pModel,_pView);
-  connect(this,SIGNAL(stateChanged(bool)),_pPresenter,SIGNAL(stateChanged(bool)));
   // Creates the last and first points
 //  _pPresenter->addPoint(_pPresenter->_limitRect.bottomLeft(),Vertical,false);
 //  _pPresenter->addPoint(_pPresenter->_limitRect.topRight(),Vertical,false);

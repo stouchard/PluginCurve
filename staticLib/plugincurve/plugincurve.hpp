@@ -42,18 +42,26 @@ class PluginCurve : public QObject
   Q_OBJECT
 
 public:
+  //! Construct a PluginCurve.
+  /*!
+  \param parent Parent item. Should be large enough.
+  */
   PluginCurve(QGraphicsObject *parent);
   ~PluginCurve();
+  /*! Returns the view. */
   QGraphicsObject *view();
+  /*! Hide the grid if b is false. Show the grid if b is true. */
+  void setGridVisible(bool b);
+  /*! Allow point to cross others points. */
+  void setPointCanCross(bool b);
+  /*! Activate grid magnetism. */
+  void setMagnetism(bool b);
 private:
   QGraphicsObject *_pParent;
   PluginCurveModel *_pModel;
   PluginCurvePresenter *_pPresenter;
   PluginCurveView *_pView;
-
 signals :
-  ///@todo connect storey signal to this one
-  void stateChanged(bool b);
 
   // Signals for the plugin users
   void notifyPointCreated(QPointF value);

@@ -266,10 +266,24 @@ PluginCurvePoint *PluginCurvePresenter::addPoint(QPointF qpoint, MobilityMode mo
   PluginCurvePoint *nextPoint = nullptr;
   PluginCurveSection *rightSection = nullptr;
 
+  // Magnetism
+  if (_magnetism == true)
+  {
+      QPointF magnetPoint = _pGrid->nearestMagnetPoint(newPos);
+    if (qAbs(newPos.x() - magnetPoint.x()) <= MAGNETDIST)
+    {
+        newPos.setX(magnetPoint.x());
+    }
+    if (qAbs(newPos.y() - magnetPoint.y()) <= MAGNETDIST)
+    {
+        newPos.setY(magnetPoint.y());
+    }
+  }
+
   // Where place the point in the list
-  int index = _pModel->pointSearchIndex(qpoint);
+  int index = _pModel->pointSearchIndex(newPos);
   // No point added if out the aera
-  if (!(_limitRect.contains(qpoint)))
+  if (!(_limitRect.contains(newPos)))
     {
       return nullptr;
     }
@@ -291,15 +305,15 @@ PluginCurvePoint *PluginCurvePresenter::addPoint(QPointF qpoint, MobilityMode mo
       return nullptr;
     }
   // Correct the point position if too close of another one
-  if (previousPoint != nullptr && qpoint.x()-previousPoint->x() < POINTMINDIST)
+  if (previousPoint != nullptr && newPos.x()-previousPoint->x() < POINTMINDIST)
     {
       newPos = QPointF(previousPoint->x() + POINTMINDIST,
-                       qpoint.y());
+                       newPos.y());
     }
-  if (nextPoint != nullptr && nextPoint->x() - qpoint.x() < POINTMINDIST)
+  if (nextPoint != nullptr && nextPoint->x() - newPos.x() < POINTMINDIST)
     {
       newPos = QPointF(nextPoint->x() - POINTMINDIST,
-                      qpoint.y());
+                      newPos.y());
     }
   // Instanciation and initialisation
   // -----> DELETE
@@ -552,7 +566,8 @@ void PluginCurvePresenter::pointPositionIsChanging(PluginCurvePoint *point)
   PluginCurveSection * lSection = point->leftSection();
   PluginCurveSection * rSection = point->rightSection();
   QRectF rect = _limitRect; // define limit points positions
-  QPointF p = point->pos();
+  QPointF oldPos = point->pos();
+  QPointF newPos = point->pos();
   PluginCurvePoint * previous = nullptr;
   PluginCurvePoint * next = nullptr;
   if (lSection != nullptr)
@@ -562,39 +577,54 @@ void PluginCurvePresenter::pointPositionIsChanging(PluginCurvePoint *point)
   // Schema :
   // (point)Previous -- (curve)lSection -- (point)This -- (curve)rSection -- (point)Next
 
+  // Magnetism
+  if (_magnetism == true)
+  {
+      QPointF magnetPoint = _pGrid->nearestMagnetPoint(oldPos);
+    if (qAbs(newPos.x() - magnetPoint.x()) <= MAGNETDIST)
+    {
+        newPos.setX(magnetPoint.x());
+    }
+    if (qAbs(newPos.y() - magnetPoint.y()) <= MAGNETDIST)
+    {
+        newPos.setY(magnetPoint.y());
+    }
+  }
   //Respect the minimum distance between points
-  if (previous != nullptr && p.x() < previous->x() + POINTMINDIST)
-    point->setPos(previous->x() + POINTMINDIST,p.y());
-  if (next != nullptr && p.x() > next->x() - POINTMINDIST)
-    point->setPos(next->x() - POINTMINDIST,p.y());
+  if (previous != nullptr && oldPos.x() < previous->x() + POINTMINDIST)
+    newPos.setX(previous->x() + POINTMINDIST);
+  if (next != nullptr && oldPos.x() > next->x() - POINTMINDIST)
+    newPos.setX(next->x() - POINTMINDIST);
+
+  // if the point is out the storey
+  if (rect.x() > newPos.x())
+    newPos.setX(rect.x());
+  if (rect.y() > newPos.y())
+    newPos.setY(rect.y());
+  if (rect.x() + rect.width() < newPos.x())
+    newPos.setX(rect.x() + rect.width());
+  if (rect.y() + rect.height() < newPos.y())
+    newPos.setY(rect.y() + rect.height());
+  //if the point can't move horizontally
+  if (point->mobility() == Vertical && point->fixedCoordinate() != oldPos.x())
+    {
+      //oldPos.setX(point->fixedCoordinate());
+      newPos.setX(point->fixedCoordinate());
+    }
+  point->setPos(newPos);
+
   // When the point reach another one
   // 3 curve must be modified.
   if (_pointCanCross)
     {
-      if (next != nullptr && p.x() > next->x())
+      if (next != nullptr && oldPos.x() > next->x())
         {
           crossByLeft(point);
         }
-      if (previous != nullptr && p.x() < previous->x())
+      if (previous != nullptr && oldPos.x() < previous->x())
         {
           crossByRight(point);
         }
-    }
-
-  // if the point is out the storey
-  if (rect.x() > p.x())
-    point->setPos(rect.x(),p.y());
-  if (rect.y() > p.y())
-    point->setPos(p.x(),rect.y());
-  if (rect.x() + rect.width() < p.x())
-    point->setPos(rect.x() + rect.width(),p.y());
-  if (rect.y() + rect.height() < p.y())
-    point->setPos(p.x(),rect.y() + rect.height());
-  //if the point can't move horizontally
-  if (point->mobility() == Vertical && point->fixedCoordinate() != p.x())
-    {
-      p.setX(point->fixedCoordinate());
-      point->setPos(point->fixedCoordinate(),p.y());
     }
   //Adjust the Curves position.
   point->adjust();

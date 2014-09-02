@@ -56,7 +56,9 @@ class PluginCurvePresenter : public QObject
   Q_OBJECT
   //Attributs
 public:
+ // WARNING ! BUG if POINTMINDIST < or = MAGNETDIST
  static const int POINTMINDIST= 4; // Minimal Distance on x axis between 2 points.
+ static const int MAGNETDIST= 3; // Distance of magnetism attraction.
 private:
  QRectF _limitRect; // Limit if the points' area in parent coordinates.
  QRectF _scale; // Indicates the value of the bottom left point and the topleft point.
@@ -65,9 +67,10 @@ private:
  /// @todo Ajouter un attribut scaletype : logarthmic/linear
   PluginCurveModel *_pModel;
   PluginCurveView *_pView;
-  ///@todo _editionMode=MainWindow->editionMode().
+  ///@todo
   ///La valeur par défault doit etre celle choisi par l'utilisateur dans une autre widget (button) .
   EditionMode _editionMode = AreaSelectionMode; // Selection mode
+  bool _magnetism = true; // Activate grid magnetism
   bool _pointCanCross; // Indicates if a point can cross an other one
   PluginCurvePoint *_lastCreatedPoint; // The last created point
   QPoint _originSelectionRectangle; // Start point of selection Rectangle
