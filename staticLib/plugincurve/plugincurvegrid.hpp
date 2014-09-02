@@ -25,8 +25,8 @@ private:
     PluginCurveMap *_pDefaultMap; /*!< The default map if no map is giving. */
     QVector<qreal> magnetPointX; /*!< Magnetic points' abscissas. */
     QVector<qreal> magnetPointY; /*!< Magnetic points' ordonates. */
-    qreal stepX; /*! Horizontal distance (in scale coordinate) between two magnetic points. */
-    qreal stepY; /*! Vertical distance (in scale coordinate) between two magnetic points. */
+    qreal stepX; /*!< Horizontal distance (in scale coordinate) between two magnetic points. */
+    qreal stepY; /*!< Vertical distance (in scale coordinate) between two magnetic points. */
 public:
     //! Constructor.
     /*!

@@ -35,7 +35,7 @@ knowledge of the CeCILL license and that you accept its terms.
 #include "plugincurvepresenter.hpp"
 
 PluginCurve::PluginCurve(QGraphicsObject *parent) :
-  QObject(parent), _pParent(parent)
+  QObject(parent)
 {
   //_pStorey = storey;
   _pModel = new PluginCurveModel(this,parent);
@@ -57,6 +57,36 @@ PluginCurve::~PluginCurve()
   _pModel = NULL;
   _pView = NULL;
   _pPresenter = NULL;
+}
+
+void PluginCurve::setAreaSelectionMode()
+{
+    _pPresenter->setEditionMode(AreaSelectionMode);
+}
+
+void PluginCurve::setGridVisible(bool b)
+{
+    _pPresenter->setGridVisible(b);
+}
+
+void PluginCurve::setLinearSelectionMode()
+{
+    _pPresenter->setEditionMode(LinearSelectionMode);
+}
+
+void PluginCurve::setMagnetism(bool b)
+{
+    _pPresenter->setMagnetism(b);
+}
+
+void PluginCurve::setPenMode()
+{
+    _pPresenter->setEditionMode(PenMode);
+}
+
+void PluginCurve::setPointCanCross(bool b)
+{
+    _pPresenter->setPointCanCross(b);
 }
 
 QGraphicsObject *PluginCurve::view()

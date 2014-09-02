@@ -45,30 +45,23 @@
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QCheckBox" name="cBGrid">
        <property name="text">
-        <string>A</string>
+        <string>Grid visible</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QCheckBox" name="cBPointCross">
        <property name="text">
-        <string>B</string>
+        <string>Points can cross</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QCheckBox" name="cBMagnet">
        <property name="text">
-        <string>C</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton_4">
-       <property name="text">
-        <string>D</string>
+        <string>Magnetism</string>
        </property>
       </widget>
      </item>
@@ -84,17 +77,15 @@
      <height>25</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuOption">
+   <widget class="QMenu" name="menuMode">
     <property name="title">
-     <string>Option</string>
+     <string>Mode</string>
     </property>
-    <addaction name="actionCreative_Mode"/>
-    <addaction name="actionPen_Mode"/>
-    <addaction name="actionArea_Selection_Mode"/>
-    <addaction name="actionLinear_Selection_Mode"/>
-    <addaction name="separator"/>
+    <addaction name="actionLinear_Selection"/>
+    <addaction name="actionArea_Selection"/>
+    <addaction name="actionPen"/>
    </widget>
-   <addaction name="menuOption"/>
+   <addaction name="menuMode"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -105,24 +96,19 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionCreative_Mode">
+  <action name="actionLinear_Selection">
    <property name="text">
-    <string>Creative Mode</string>
+    <string>Linear Selection</string>
    </property>
   </action>
-  <action name="actionPen_Mode">
+  <action name="actionArea_Selection">
    <property name="text">
-    <string>Pen Mode</string>
+    <string>Area Selection</string>
    </property>
   </action>
-  <action name="actionArea_Selection_Mode">
+  <action name="actionPen">
    <property name="text">
-    <string>Area Selection Mode</string>
-   </property>
-  </action>
-  <action name="actionLinear_Selection_Mode">
-   <property name="text">
-    <string>Linear Selection Mode</string>
+    <string>Pen</string>
    </property>
   </action>
  </widget>

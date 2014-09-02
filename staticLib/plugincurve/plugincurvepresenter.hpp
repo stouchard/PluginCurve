@@ -70,7 +70,7 @@ private:
   ///@todo
   ///La valeur par défault doit etre celle choisi par l'utilisateur dans une autre widget (button) .
   EditionMode _editionMode = AreaSelectionMode; // Selection mode
-  bool _magnetism = true; // Activate grid magnetism
+  bool _magnetism; // Activate grid magnetism
   bool _pointCanCross; // Indicates if a point can cross an other one
   PluginCurvePoint *_lastCreatedPoint; // The last created point
   QPoint _originSelectionRectangle; // Start point of selection Rectangle
@@ -96,9 +96,12 @@ public:
   void removePoint(PluginCurvePoint *point);
   // Change the edition mode
   void setEditionMode(EditionMode editionMode);
-  // Returns the scale rectangle. It represents the limmit of point's value.
-  QRectF scaleRect();
-
+  /* Hides the grid if b is false. Show the grid if b is true. */
+  void setGridVisible(bool b);
+  /* Activates (b is true) or deactivates (b is false) grid magnetism. */
+  void setMagnetism(bool b);
+  /* Allows (b is true) or forbids (b is false) points to cross others points. */
+  void setPointCanCross(bool b);
 signals:
 // --> Model
   void stateChanged(bool b);

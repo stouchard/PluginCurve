@@ -40,6 +40,8 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->setupUi(this);
   createTextBrowser();
   createGraphics();
+  createMenu();
+  createCB();
 }
 
 void MainWindow::createGraphics()
@@ -50,16 +52,16 @@ void MainWindow::createGraphics()
   _pView->setScene(scene);
   QGraphicsRectItem *rect = new QGraphicsRectItem();
   rect->setRect(0,0,200,200);
-  PluginCurve *plugincurve = new PluginCurve(0);
-  connect(plugincurve,SIGNAL(notifyPointCreated(QPointF)),this,SLOT(pointCreated(QPointF)));
-  connect(plugincurve,SIGNAL(notifyPointDeleted(QPointF)),this,SLOT(pointDeleted(QPointF)));
-  connect(plugincurve,SIGNAL(notifyPointMoved(QPointF,QPointF)),this,SLOT(pointMoved(QPointF,QPointF)));
-  connect(plugincurve,SIGNAL(notifySectionCreated(QPointF,QPointF,qreal)),this,SLOT(sectionCreated(QPointF,QPointF,qreal)));
-  connect(plugincurve,SIGNAL(notifySectionDeleted(QPointF,QPointF)),this,SLOT(sectionDeleted(QPointF,QPointF)));
-  connect(plugincurve,SIGNAL(notifySectionMoved(QPointF,QPointF,QPointF,QPointF)),this,SLOT(sectionMoved(QPointF,QPointF,QPointF,QPointF)));
+  _pPluginCurve = new PluginCurve(0);
+  connect(_pPluginCurve,SIGNAL(notifyPointCreated(QPointF)),this,SLOT(pointCreated(QPointF)));
+  connect(_pPluginCurve,SIGNAL(notifyPointDeleted(QPointF)),this,SLOT(pointDeleted(QPointF)));
+  connect(_pPluginCurve,SIGNAL(notifyPointMoved(QPointF,QPointF)),this,SLOT(pointMoved(QPointF,QPointF)));
+  connect(_pPluginCurve,SIGNAL(notifySectionCreated(QPointF,QPointF,qreal)),this,SLOT(sectionCreated(QPointF,QPointF,qreal)));
+  connect(_pPluginCurve,SIGNAL(notifySectionDeleted(QPointF,QPointF)),this,SLOT(sectionDeleted(QPointF,QPointF)));
+  connect(_pPluginCurve,SIGNAL(notifySectionMoved(QPointF,QPointF,QPointF,QPointF)),this,SLOT(sectionMoved(QPointF,QPointF,QPointF,QPointF)));
 //  PluginCurve *plugincurve = new PluginCurve(rect->toGraphicsObject());
 //  scene->addItem(rect);
-  scene->addItem(plugincurve->view());
+  scene->addItem(_pPluginCurve->view());
   rect->show();
   _pView->update();
   _pView->show();
@@ -69,6 +71,22 @@ void MainWindow::createTextBrowser()
 {
   _pTextBrowser = ui->textBrowser;
   _pTextBrowser->setReadOnly(true);
+}
+
+void MainWindow::createMenu()
+{
+
+}
+
+void MainWindow::createCB()
+{
+  _cBGrid = ui->cBGrid;
+  _cBMagnet = ui->cBMagnet;
+  _cBPointCross = ui->cBPointCross;
+
+  connect(_cBGrid,SIGNAL(stateChanged(int)),this,SLOT(setGridVisible(int)));
+  connect(_cBMagnet,SIGNAL(stateChanged(int)),this,SLOT(setMagnetism(int)));
+  connect(_cBPointCross,SIGNAL(stateChanged(int)),this,SLOT(setPointCanCross(int)));
 }
 
 void MainWindow::pointCreated(QPointF point)
@@ -113,6 +131,30 @@ void MainWindow::sectionMoved(QPointF oldSource, QPointF oldDest, QPointF newSou
             .arg(newSource.x()).arg(newSource.y())
             .arg(newDest.x()).arg(newDest.y());
   _pTextBrowser->append(str);
+}
+
+void MainWindow::setGridVisible(int i)
+{
+  if (i==0)
+    _pPluginCurve->setGridVisible(false);
+  else
+    _pPluginCurve->setGridVisible(true);
+}
+
+void MainWindow::setMagnetism(int i)
+{
+    if (i==0)
+      _pPluginCurve->setMagnetism(false);
+    else
+      _pPluginCurve->setMagnetism(true);
+}
+
+void MainWindow::setPointCanCross(int i)
+{
+  if (i==0)
+    _pPluginCurve->setPointCanCross(false);
+  else
+    _pPluginCurve->setPointCanCross(true);
 }
 
 MainWindow::~MainWindow()

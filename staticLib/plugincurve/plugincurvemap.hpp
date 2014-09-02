@@ -7,6 +7,15 @@ class PluginCurveMap : public QObject
 {
     Q_OBJECT
 
+    /*!
+    *  This class enables to convert items in paint coordinates to scale coordinates and vice versa.
+    *  @n
+    *
+    *  @brief Convert coordinates
+    *  @author Simon Touchard, Myriam Desainte-Catherine
+    *  @date 2014
+    */
+
 // Attributes
 private:
     QRectF _scaleRect; /*!< Define points' area in scale coordinate. */

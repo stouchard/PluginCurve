@@ -46,10 +46,10 @@ PluginCurvePresenter::PluginCurvePresenter(PluginCurve *parent, PluginCurveModel
   QObject(parent),_pModel(model),_pView(view)
 {
   // ** Initialisation **
-  qreal minXValue = -1;
-  qreal minYValue = -100;
-  qreal maxXValue = 0;
-  qreal maxYValue = 100;
+  qreal minXValue = -2.78;
+  qreal minYValue = -19988;
+  qreal maxXValue = 5.94;
+  qreal maxYValue = 16672;
   // Point's area
   /// @todo prendre l'echelle en paramètre du constructeur (?)
   // Point's area in scale coordinate
@@ -63,7 +63,8 @@ PluginCurvePresenter::PluginCurvePresenter(PluginCurve *parent, PluginCurveModel
   _pGrid = new PluginCurveGrid(_pView,_pMap);
   // Points behavior
   //_pointCanCross = mainWindow()->pointCanCross();
-  _pointCanCross=true;
+  _pointCanCross = true;
+  _magnetism = true;
   // ** Connections **
   // Presenter --> Model
   connect(this,SIGNAL(stateChanged(bool)),_pModel,SLOT(setState(bool)));
@@ -136,9 +137,19 @@ void PluginCurvePresenter::setEditionMode(EditionMode editionMode)
   _editionMode = editionMode;
 }
 
-QRectF PluginCurvePresenter::scaleRect()
+void PluginCurvePresenter::setGridVisible(bool b)
 {
-    return _scale;
+    _pGrid->setVisible(b);
+}
+
+void PluginCurvePresenter::setMagnetism(bool b)
+{
+    _magnetism = b;
+}
+
+void PluginCurvePresenter::setPointCanCross(bool b)
+{
+    _pointCanCross = b;
 }
 
 void PluginCurvePresenter::crossByLeft(PluginCurvePoint *point)

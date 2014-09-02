@@ -34,7 +34,9 @@ knowledge of the CeCILL license and that you accept its terms.
 #include <QMainWindow>
 #include <QGraphicsView>
 #include <QTextBrowser>
+#include <QCheckBox>
 class QGraphicsView;
+class PluginCurve;
 
 namespace Ui {
   class MainWindow;
@@ -46,8 +48,13 @@ class MainWindow : public QMainWindow
 
 
 private:
+  PluginCurve *_pPluginCurve;
   QGraphicsView *_pView;
   QTextBrowser *_pTextBrowser;
+  QMenu *_pMenuMode;
+  QCheckBox *_cBPointCross;
+  QCheckBox *_cBGrid;
+  QCheckBox *_cBMagnet;
   Ui::MainWindow *ui;
 
 public:
@@ -56,7 +63,8 @@ public:
 private:
   void createGraphics();
   void createTextBrowser();
-
+  void createMenu();
+  void createCB();
 public slots:
   void pointCreated(QPointF point);
   void pointDeleted(QPointF point);
@@ -64,6 +72,10 @@ public slots:
   void sectionCreated(QPointF source, QPointF dest, qreal coef);
   void sectionDeleted(QPointF source, QPointF dest);
   void sectionMoved(QPointF oldSource,QPointF oldDest,QPointF newSource, QPointF newDest);
+  void setGridVisible(int i);
+  void setMagnetism (int i);
+  void setPointCanCross(int i);
+
 };
 
 #endif // MAINWINDOW_HPP
