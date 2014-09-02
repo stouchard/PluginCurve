@@ -18,6 +18,8 @@ SOURCES += plugincurve.cpp\
             plugincurvesection.cpp \
             plugincurvesectionbezier.cpp \
             plugincurvesectionlinear.cpp \
+            plugincurvemap.cpp \
+            plugincurvegrid.cpp
 
 HEADERS += plugincurve.hpp\
            plugincurve2_global.hpp\
@@ -28,6 +30,8 @@ HEADERS += plugincurve.hpp\
            plugincurvesection.hpp \
            plugincurvesectionbezier.hpp \
            plugincurvesectionlinear.hpp \
+           plugincurvemap.hpp \
+           plugincurvegrid.hpp
 
 unix:!symbian {
     maemo5 {
