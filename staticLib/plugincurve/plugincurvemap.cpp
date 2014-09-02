@@ -10,8 +10,8 @@ QPointF PluginCurveMap::scaleToPaint(QPointF val)
 {
     QPointF pos;
     pos.setX( (val.x()-_scaleRect.x())*_paintRect.width() / _scaleRect.width() + _paintRect.x() );
-    pos.setY( (val.y()-_scaleRect.y())*_paintRect.height() / _scaleRect.height() + _paintRect.y());
-//    pos.setY( _paintRect.height() + _paintRect.y() - (_paintRect.height()*(val.y() - _scaleRect.y())/_scaleRect.height()));
+//    pos.setY( (val.y()-_scaleRect.y())*_paintRect.height() / _scaleRect.height() + _paintRect.y());
+    pos.setY( _paintRect.height() + _paintRect.y() - (_paintRect.height()*(val.y() - _scaleRect.y())/_scaleRect.height()));
     return pos;
 }
 
