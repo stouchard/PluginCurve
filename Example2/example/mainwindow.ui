@@ -49,6 +49,9 @@
        <property name="text">
         <string>Grid visible</string>
        </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item>
@@ -56,12 +59,18 @@
        <property name="text">
         <string>Points can cross</string>
        </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item>
       <widget class="QCheckBox" name="cBMagnet">
        <property name="text">
         <string>Magnetism</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </item>

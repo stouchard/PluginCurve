@@ -9,6 +9,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsItem>
 #include <QKeyEvent>
+#include <QGraphicsView>
 #include <QGraphicsScene>
 #include <iostream>
 
@@ -74,6 +75,18 @@ QColor PluginCurvePoint::color()
 QColor PluginCurvePoint::selectColor()
 {
   return _selectColor;
+}
+
+QPointF PluginCurvePoint::globalPos()
+{
+    Q_ASSERT(scene() != NULL); // the focus item belongs to a scene
+    Q_ASSERT(!scene()->views().isEmpty()); // that scene is displayed in a view...
+    Q_ASSERT(scene()->views().first() != NULL); // ... which is not null...
+    Q_ASSERT(scene()->views().first()->viewport() != NULL); // ... and has a viewport
+    QGraphicsView *v = scene()->views().first();
+    QPointF sceneP = scenePos();
+    QPoint viewP = v->mapFromScene(sceneP);
+    return v->viewport()->mapToGlobal(viewP);
 }
 
 bool PluginCurvePoint::removable()
@@ -197,7 +210,10 @@ QPainterPath PluginCurvePoint::shape() const
 
 void PluginCurvePoint::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-  QGraphicsItem::mousePressEvent(event);
+    if (event->button()==Qt::RightButton)
+        emit (rightClicked(this));
+    else
+        QGraphicsItem::mousePressEvent(event);
 }
 
 void PluginCurvePoint::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)

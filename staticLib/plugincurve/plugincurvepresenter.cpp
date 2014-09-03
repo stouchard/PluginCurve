@@ -37,10 +37,12 @@ knowledge of the CeCILL license and that you accept its terms.
 #include "plugincurvepoint.hpp"
 #include "plugincurvemap.hpp"
 #include "plugincurvegrid.hpp"
+#include "plugincurvemenupoint.h"
 #include <QGraphicsSceneEvent>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include <QCursor>
+#include <iostream>
 
 PluginCurvePresenter::PluginCurvePresenter(PluginCurve *parent, PluginCurveModel *model, PluginCurveView *view) :
   QObject(parent),_pModel(model),_pView(view)
@@ -356,6 +358,7 @@ PluginCurvePoint *PluginCurvePresenter::addPoint(QPointF qpoint, MobilityMode mo
   // Add points and curves in the view
 
   emit(pointAdded(index+1,point));
+  connect(point,SIGNAL(rightClicked(PluginCurvePoint*)),this,SLOT(pointRightClicked(PluginCurvePoint*)));
   connect(point,SIGNAL(pointPositionHasChanged()),this,SLOT(pointPositionHasChanged()));
   connect(point,SIGNAL(pointPositionIsChanging(PluginCurvePoint*)),this,SLOT(pointPositionIsChanging(PluginCurvePoint*)));
   connect(this,SIGNAL(setAllFlags(bool)),point,SLOT(setAllFlags(bool)));
@@ -660,4 +663,34 @@ void PluginCurvePresenter::pointPositionHasChanged()
           }
       }
 
+}
+
+void PluginCurvePresenter::pointRightClicked(PluginCurvePoint *point)
+{
+    PluginCurveMenuPoint menu(point);
+
+//    QMenu menu;
+//    menu.addAction("Delete");
+//    menu.addSeparator();
+//    menu.addAction("Blabla");
+    QAction* selectedItem = menu.exec(point->globalPos().toPoint());
+    if (selectedItem)
+    {
+        if (selectedItem->text() == PluginCurveMenuPoint::DELETE)
+        {
+            removePoint(point);
+        }
+        if (selectedItem->text() == PluginCurveMenuPoint::FIX_HORIZONTAL)
+        {
+            if (!selectedItem->isChecked())
+                point->setMobility(Normal);
+            else
+                point->setMobility(Vertical);
+            selectedItem->setChecked(!selectedItem->isChecked());
+        }
+    }
+    else
+    {
+    //Do nothing
+    }
 }

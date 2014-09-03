@@ -39,8 +39,8 @@
 #include <iostream>
 
 
-PluginCurveView::PluginCurveView(QGraphicsObject *parent, PluginCurvePresenter *presenter)
-  : QGraphicsObject(parent), _pParent(parent), _pPresenter(presenter)
+PluginCurveView::PluginCurveView(QGraphicsObject *parent)
+  : QGraphicsObject(parent)
 {
   _pSelectionRectangle = new QGraphicsRectItem(QRect(QPoint(),QSize()),this);
   _pSelectionRectangle->hide();
@@ -68,14 +68,14 @@ void PluginCurveView::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
 /// @todo corriger si scene rect non défini !
 QRectF PluginCurveView::boundingRect() const
 {
-  if (_pParent == nullptr){
+  if (parentItem() == nullptr){
       if (scene() == nullptr)
         return QRectF(0,0,0,0);
       else
         return scene()->sceneRect();
     }
   else
-    return _pParent->boundingRect();
+    return parentItem()->boundingRect();
 }
 
 void PluginCurveView::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)

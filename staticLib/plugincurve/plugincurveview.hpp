@@ -45,11 +45,11 @@ class PluginCurveView : public QGraphicsObject
   Q_OBJECT
 
 private:
-  QGraphicsObject *_pParent; // Pointer to the parent storey
-  PluginCurvePresenter *_pPresenter; // Pointer to the presenter
+//  QGraphicsObject *_pParent; // Pointer to the parent storey
+//  PluginCurvePresenter *_pPresenter; // Pointer to the presenter
   QGraphicsRectItem *_pSelectionRectangle; // Selection Rectangle
 public:
-  PluginCurveView(QGraphicsObject *parent, PluginCurvePresenter *presenter);
+  PluginCurveView(QGraphicsObject *parent);
   ~PluginCurveView();
   QGraphicsRectItem *selectionRectangle();
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

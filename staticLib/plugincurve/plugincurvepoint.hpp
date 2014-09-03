@@ -10,6 +10,7 @@ class PluginCurveView;
 
 //! Mobility mode enum.
 /*! Enum the differents point's behavior while moved*/
+/// @todo Add Mobility mode : horizontal, Fixed
 enum MobilityMode { Normal, Vertical }; // Point movement restriction enumeration
 
 /*!
@@ -44,7 +45,7 @@ private:
 signals:
     void pointPositionHasChanged(); /*!< Notifies that the points selected has been released. */
     void pointPositionIsChanging(PluginCurvePoint *); /*!< Notifies that the point is moving. */
-
+    void rightClicked(PluginCurvePoint * point); /*!< Notifies that the user right clicked the point. */
   // Slots
 public slots :
     void setAllFlags(bool b);
@@ -90,6 +91,8 @@ public:
     QColor color();
     /*! Returns the point's color when selected. */
     QColor selectColor();
+    /*! Returns the point position in gloabl coordinates. */
+    QPointF globalPos();
     /*! Set point's removability to.
     \sa removable()
     */

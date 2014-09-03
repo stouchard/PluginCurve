@@ -137,6 +137,7 @@ public slots:
 // PluginCurvePoint -->
   void pointPositionHasChanged();
   void pointPositionIsChanging(PluginCurvePoint *point);
+  void pointRightClicked(PluginCurvePoint *point);
 
 };
 
