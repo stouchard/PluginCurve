@@ -1,6 +1,7 @@
 #include "plugincurvegrid.hpp"
 #include <QPainter>
 #include <iostream>
+#include <cmath>
 
 PluginCurveGrid::PluginCurveGrid(PluginCurveView *parent, PluginCurveMap *map) :
     QGraphicsObject(parent)

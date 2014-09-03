@@ -10,6 +10,7 @@ QT       += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TEMPLATE = lib
 CONFIG += staticlib c++11 warn_on
+QMAKE_CXXFLAGS += -std=c++11
 SOURCES += plugincurve.cpp\
             plugincurvemodel.cpp \
             plugincurvepresenter.cpp \
