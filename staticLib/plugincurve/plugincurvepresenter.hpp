@@ -57,10 +57,10 @@ class PluginCurvePresenter : public QObject
   //Attributs
 public:
  // WARNING ! BUG if POINTMINDIST < or = MAGNETDIST
- static const int POINTMINDIST= 4; // Minimal Distance on x axis between 2 points.
+ static const int POINTMINDIST= 10; // Minimal Distance on x axis between 2 points.
  static const int MAGNETDIST= 3; // Distance of magnetism attraction.
 private:
- QRectF _limitRect; // Limit if the points' area in parent coordinates.
+ QGraphicsRectItem *_pLimitRect; // Limit if the points' area in parent coordinates.
  QRectF _scale; // Indicates the value of the bottom left point and the topleft point.
  PluginCurveMap *_pMap; // Transform device in point coordinates to paint coordinates and vice-versa.
  PluginCurveGrid *_pGrid; // The grid;
@@ -75,14 +75,24 @@ private:
   PluginCurvePoint *_lastCreatedPoint; // The last created point
   QPoint _originSelectionRectangle; // Start point of selection Rectangle
 
+  /* Adjusts point position after magntetism effect. */
+  void adjustPointMagnetism(QPointF &newPos);
+  /* Adjusts point position with minimum distance respectations. */
+  void adjustPointMinDist(PluginCurvePoint *point, QPointF &newPos);
+  /* Adjusts point position with limit area respectations. */
+  void adjustPointLimit(QPointF &newPos);
+  /* Adjusts point position with mobility respectations. */
+  void adjustPointMobility(PluginCurvePoint *point, QPointF &newPos);
   // When the point crossed the previous one, changes the list, curves and the points position
-  void crossByRight(PluginCurvePoint *point);
+  void crossByRight(PluginCurvePoint *point, QPointF &newPos);
   //When the point crossed the next one, changes the list, curves and the points position
-  void crossByLeft(PluginCurvePoint *point);
+  void crossByLeft(PluginCurvePoint *point, QPointF &newPos);
   // Indicates if a point can be inserted before point
   bool enoughSpaceBefore(PluginCurvePoint *point);
   // Indicates if a point can be inserted after point
   bool enoughSpaceAfter(PluginCurvePoint *point);
+  // Update the limit rect. Used after scaling.
+  void updateLimitRect();
 public:
   PluginCurvePresenter(PluginCurve *parent, PluginCurveModel *model, PluginCurveView *view);
   ~PluginCurvePresenter();
@@ -102,6 +112,9 @@ public:
   void setMagnetism(bool b);
   /* Allows (b is true) or forbids (b is false) points to cross others points. */
   void setPointCanCross(bool b);
+  /* Adjusts the point position. */
+  void adjustPoint(PluginCurvePoint *point, QPointF &newPos);
+
 signals:
 // --> Model
   void stateChanged(bool b);
@@ -133,10 +146,10 @@ public slots:
   void mouseRelease(QGraphicsSceneMouseEvent *mouseEvent);
   void keyPress(QKeyEvent *keyEvent); // Key event reaction
   void keyRelease(QKeyEvent *keyEvent);
+  void wheelTurned(QGraphicsSceneWheelEvent *event);
   void viewSceneChanged(QGraphicsScene *);
 // PluginCurvePoint -->
   void pointPositionHasChanged();
-  void pointPositionIsChanging(PluginCurvePoint *point);
   void pointRightClicked(PluginCurvePoint *point);
 
 };

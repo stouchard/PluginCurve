@@ -13,11 +13,8 @@
 #include <QGraphicsScene>
 #include <iostream>
 
-
-
-
-PluginCurvePoint::PluginCurvePoint(PluginCurveView *parent, QPointF point, QPointF value, MobilityMode mobility, bool removable) :
-  QGraphicsObject(parent)
+PluginCurvePoint::PluginCurvePoint(PluginCurveView *parent, PluginCurvePresenter *presenter, QPointF point, QPointF value, MobilityMode mobility, bool removable) :
+  QGraphicsObject(parent), _pPresenter(presenter)
 {
   _color = Qt::gray; // Point's color
   _selectColor = Qt::red; // Point's color when selected
@@ -25,6 +22,7 @@ PluginCurvePoint::PluginCurvePoint(PluginCurveView *parent, QPointF point, QPoin
   setAcceptHoverEvents(true);
   setCacheMode(DeviceCoordinateCache);
   setFlag(ItemIsFocusable,false);
+  setFlag(QGraphicsItem::ItemIgnoresTransformations);
   setZValue(1);
   setValue(value);
   setPos(point);
@@ -249,10 +247,16 @@ QVariant PluginCurvePoint::itemChange(GraphicsItemChange change, const QVariant 
 {
   if (change == ItemPositionHasChanged)
     {
-      emit (pointPositionIsChanging(this));
+      // The point moved, the sections must be adjusted.
+      adjust();
+      //emit (pointPositionIsChanging(this)); //MODIFICATION
     }
-  if (change == ItemSelectedChange)
+  if (change == ItemPositionChange)
     {
+      QPointF newPos = value.toPointF();
+      _pPresenter->adjustPoint(this,newPos);
+      return QVariant(newPos);
+      //emit (pointPositionIsChanging(this));
       // emit (pointSelectedChange(this));
       // update();
     }

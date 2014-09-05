@@ -44,8 +44,9 @@ PluginCurveView::PluginCurveView(QGraphicsObject *parent)
 {
   _pSelectionRectangle = new QGraphicsRectItem(QRect(QPoint(),QSize()),this);
   _pSelectionRectangle->hide();
-  setFlag(ItemIsFocusable);
-  setFocus();
+  setFlag(ItemIsFocusable); // For board entries
+  setFlag(ItemClipsChildrenToShape); // Children can't be drawn outside this item's shape
+  setFocus(); /// @todo get focus ? Good idea ? Create fonctions for get / release focus ?
 }
 
 PluginCurveView::~PluginCurveView()
@@ -58,11 +59,25 @@ QGraphicsRectItem *PluginCurveView::selectionRectangle()
   return _pSelectionRectangle;
 }
 
+void PluginCurveView::zoom(QPointF origin, qreal delta)
+{
+    qreal scaleY = transform().m22();
+    qreal fact = delta / 120;
+    QTransform tr = QTransform::fromScale(1,(fact/10)+scaleY);
+    setTransformOriginPoint(origin);
+    prepareGeometryChange();
+    setTransform(tr);
+
+    update();
+}
+
 void PluginCurveView::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
   Q_UNUSED(option)
   Q_UNUSED(widget)
   painter->setRenderHint(QPainter::Antialiasing, true);
+  painter->setPen(Qt::blue);
+  painter->drawRect(boundingRect());
 }
 
 /// @todo corriger si scene rect non défini !
@@ -72,10 +87,10 @@ QRectF PluginCurveView::boundingRect() const
       if (scene() == nullptr)
         return QRectF(0,0,0,0);
       else
-        return scene()->sceneRect();
+        return mapFromScene(scene()->sceneRect()).boundingRect();
     }
   else
-    return parentItem()->boundingRect();
+    return mapFromParent(parentItem()->boundingRect()).boundingRect();
 }
 
 void PluginCurveView::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
@@ -103,10 +118,14 @@ void PluginCurveView::keyPressEvent(QKeyEvent *keyEvent)
   emit (keyPressed(keyEvent));
 }
 
-///@todo Edition Mode dans Mainwindow
 void PluginCurveView::keyReleaseEvent(QKeyEvent *keyEvent)
 {
   emit (keyReleased(keyEvent));
+}
+
+void PluginCurveView::wheelEvent(QGraphicsSceneWheelEvent *event)
+{
+    emit (wheelTurned(event));
 }
 
 QVariant PluginCurveView::itemChange(GraphicsItemChange change, const QVariant &value)

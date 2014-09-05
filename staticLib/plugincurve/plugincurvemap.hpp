@@ -31,8 +31,12 @@ public:
     PluginCurveMap(QRectF scaleRect, QRectF paintRect);
     /*! Transform a point from scale to paint coordinates. */
     QPointF scaleToPaint(QPointF val);
+    /*! Transform a rectangle from scale to paint coordinates. */
+    QRectF scaleToPaint(QRectF rect);
     /*! Transform a point from paint to scale coordinates. */
     QPointF paintToScale(QPointF pos);
+    /*! Transform a rectangle from paint to scale coordinates. */
+    QRectF paintToScale(QRectF rect);
     /*! Returns the point's area in paint coordinate */
     QRectF paintRect();
     /*! Returns the point's area in scale coordinate */

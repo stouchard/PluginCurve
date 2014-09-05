@@ -6,7 +6,7 @@
 #include <QList>
 class PluginCurveSection;
 class PluginCurveView;
-
+class PluginCurvePresenter;
 
 //! Mobility mode enum.
 /*! Enum the differents point's behavior while moved*/
@@ -33,6 +33,7 @@ protected:
   QColor _color; /*!< Point's color. */
   QColor _selectColor; /*!< Point's color when selected. */
 private:
+  PluginCurvePresenter *_pPresenter; /*!< A pointer to the presenter. */
   QPointF _value; /*!< Point's value (Time,YValue). */
   MobilityMode _mobility; /*!< Point movement restriction. */
   qreal _fixedCoordinate; /*!< Fixed coordinate if point's mobility is vertical. */
@@ -55,12 +56,13 @@ public:
     //! Constructs a PluginCurvePoint. The left section and right section are initially null.
        /*!
          \param parent Point's parent, must be a PluginCurve view.
+         \param presenter Pointer to the presenter.
          \param point Point's initial position.
          \param value Point's value.
          \param mobility Point's mobility.
          \param removable Indicates if the point can be removed.
        */
-    PluginCurvePoint(PluginCurveView *parent, QPointF point, QPointF value, MobilityMode mobility = Normal, bool removable = true);
+    PluginCurvePoint(PluginCurveView *parent, PluginCurvePresenter *presenter, QPointF point, QPointF value, MobilityMode mobility = Normal, bool removable = true);
     ~PluginCurvePoint();
     /*! Sets the point's value to value.
     */

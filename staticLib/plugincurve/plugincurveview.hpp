@@ -52,6 +52,7 @@ public:
   PluginCurveView(QGraphicsObject *parent);
   ~PluginCurveView();
   QGraphicsRectItem *selectionRectangle();
+  void zoom (QPointF origin, qreal delta);
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
   QRectF boundingRect() const;
 
@@ -62,6 +63,7 @@ signals:
   void mouseReleased(QGraphicsSceneMouseEvent *);
   void keyPressed(QKeyEvent *);
   void keyReleased(QKeyEvent *);
+  void wheelTurned(QGraphicsSceneWheelEvent *);
   void viewSceneChanged(QGraphicsScene *);
 
 protected:
@@ -71,6 +73,7 @@ protected:
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *releaseEvent);
   void keyPressEvent(QKeyEvent *keyEvent);
   void keyReleaseEvent(QKeyEvent *keyEvent);
+  void wheelEvent(QGraphicsSceneWheelEvent *event);
   QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 public slots:
