@@ -4,6 +4,7 @@
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QPainter>
+#include <QGraphicsSceneMouseEvent>
 #include <QLineF>
 
 PluginCurveSection::PluginCurveSection(PluginCurveView *parent, PluginCurvePoint *source, PluginCurvePoint *dest) :
@@ -14,6 +15,8 @@ PluginCurveSection::PluginCurveSection(PluginCurveView *parent, PluginCurvePoint
     _color = QColor(Qt::darkGray);
     _selectColor = QColor(Qt::red);
     setCacheMode(DeviceCoordinateCache);
+    setFlag(ItemIgnoresTransformations);
+    setFlag(ItemClipsToShape);
     setAcceptHoverEvents(true);
     setZValue(0);
     setPos(source->pos());
@@ -72,10 +75,15 @@ QColor PluginCurveSection::selectColor()
 
 void PluginCurveSection::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-  Q_UNUSED(event)
-  scene()->clearSelection();
-  _pSourcePoint->setSelected(true);
-  _pDestPoint->setSelected(true);
+  if (event->button() == Qt::RightButton)
+  {
+      emit rightClicked(this,event->scenePos());
+  }
+  else if (event->button() == Qt::LeftButton)
+  {
+    _pSourcePoint->setSelected(true);
+    _pDestPoint->setSelected(true);
+  }
 }
 
 void PluginCurveSection::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
@@ -119,7 +127,7 @@ void PluginCurveSection::adjust()
 
 void PluginCurveSection::setAllFlags(bool b)
 {
-  //setFlag(QGraphicsItem::ItemIsMovable,b);
+  setFlag(QGraphicsItem::ItemIsMovable,b);
   setFlag(QGraphicsItem::ItemIsSelectable,b);
   setFlag(QGraphicsItem::ItemSendsGeometryChanges,b);
 }

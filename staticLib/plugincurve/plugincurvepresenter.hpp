@@ -56,9 +56,8 @@ class PluginCurvePresenter : public QObject
   Q_OBJECT
   //Attributs
 public:
- // WARNING ! BUG if POINTMINDIST < or = MAGNETDIST
- static const int POINTMINDIST= 10; // Minimal Distance on x axis between 2 points.
- static const int MAGNETDIST= 3; // Distance of magnetism attraction.
+ static const int POINTMINDIST= 1; // Minimal Distance on x axis between 2 points.
+ static const int MAGNETDIST= 4; // Distance of magnetism attraction.
 private:
  QGraphicsRectItem *_pLimitRect; // Limit if the points' area in parent coordinates.
  QRectF _scale; // Indicates the value of the bottom left point and the topleft point.
@@ -151,6 +150,8 @@ public slots:
 // PluginCurvePoint -->
   void pointPositionHasChanged();
   void pointRightClicked(PluginCurvePoint *point);
+// PluginCurveSection -->
+  void sectionRightClicked(PluginCurveSection *section, QPointF scenePos);
 
 };
 

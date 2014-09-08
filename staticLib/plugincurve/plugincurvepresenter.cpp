@@ -38,20 +38,23 @@ knowledge of the CeCILL license and that you accept its terms.
 #include "plugincurvemap.hpp"
 #include "plugincurvegrid.hpp"
 #include "plugincurvemenupoint.h"
+#include "plugincurvemenusection.hpp"
 #include <QGraphicsSceneEvent>
+#include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include <QCursor>
+#include <QTransform>
 #include <iostream>
 
 PluginCurvePresenter::PluginCurvePresenter(PluginCurve *parent, PluginCurveModel *model, PluginCurveView *view) :
   QObject(parent),_pModel(model),_pView(view)
 {
   // ** Initialisation **
-  qreal minXValue = -2.78;
-  qreal minYValue = -19988;
-  qreal maxXValue = 5.94;
-  qreal maxYValue = 16672;
+  qreal minXValue = 0.01;
+  qreal minYValue = -10;
+  qreal maxXValue = 0.015;
+  qreal maxYValue = 10;
   // Point's area
   /// @todo prendre l'echelle en paramètre du constructeur (?)
   // Point's area in scale coordinate
@@ -186,16 +189,11 @@ void PluginCurvePresenter::adjustPoint(PluginCurvePoint *point, QPointF &newPos)
     // 3 curve must be modified.
     if (_pointCanCross)
       {
-        qreal x;
-        if (next != nullptr)
-            x = next->x();
-        if (next != nullptr && newPos.x() > x)
+        if (next != nullptr && newPos.x() > next->x())
           {
             crossByLeft(point,newPos);
           }
-        if (previous != nullptr)
-            x = previous->x();
-        if (previous != nullptr && newPos.x() < x)
+        if (previous != nullptr && newPos.x() < previous->x())
           {
             crossByRight(point,newPos);
           }
@@ -240,7 +238,14 @@ void PluginCurvePresenter::adjustPointMinDist(PluginCurvePoint *point, QPointF &
 
 void PluginCurvePresenter::adjustPointLimit(QPointF &newPos)
 {
-    QRectF rect = _pLimitRect->rect(); // define limit points positions
+    QTransform tInv;
+    Q_ASSERT(_pView->transform().isInvertible());
+    tInv = _pView->transform().inverted();
+//    QRectF limitRect = _pLimitRect->rect();
+//    QRectF rect2 = _pView->mapRectFromItem(_pLimitRect,_pLimitRect->rect()); // define limit points positions
+//    QRectF rect3 = _pView->transform().mapRect(_pLimitRect->rect());
+    QRectF rect = tInv.mapRect(_pLimitRect->rect());
+//    QRectF rectScene = _pView->mapRectFromScene(_pLimitRect->mapRectToScene(_pLimitRect->rect()));
     if (rect.x() > newPos.x())
       newPos.setX(rect.x());
     if (rect.y() > newPos.y())
@@ -380,6 +385,7 @@ PluginCurveSection *PluginCurvePresenter::addSection(PluginCurvePoint *source, P
   emit (notifySectionCreated(section->sourcePoint()->getValue(),section->destPoint()->getValue(),section->bendingCoef()));
   connect(this,SIGNAL(setAllFlags(bool)),section,SLOT(setAllFlags(bool)));
   connect(section,SIGNAL(doubleClicked(QGraphicsSceneMouseEvent*)),this,SLOT(doubleClick(QGraphicsSceneMouseEvent*)));
+  connect(section,SIGNAL(rightClicked(PluginCurveSection*,QPointF)),this,SLOT(sectionRightClicked(PluginCurveSection*,QPointF)));
   return section;
 }
 
@@ -675,10 +681,13 @@ void PluginCurvePresenter::keyRelease(QKeyEvent *keyEvent)
 
 void PluginCurvePresenter::wheelTurned(QGraphicsSceneWheelEvent *event)
 {
-    updateLimitRect();
+    _pLimitRect->setTransformOriginPoint(event->pos());
+
+//    updateLimitRect();
     _pView->zoom(event->pos(),event->delta());
     // Limit rect coordinate have changed
-    _pMap->setPaintRect(_pLimitRect->rect()); // Update map and grid
+    Q_ASSERT(_pView->transform().isInvertible());
+    _pMap->setPaintRect(_pView->transform().inverted().mapRect(_pLimitRect->rect())); // Update map and grid
 }
 
 void PluginCurvePresenter::viewSceneChanged(QGraphicsScene * scene)
@@ -692,80 +701,6 @@ void PluginCurvePresenter::viewSceneChanged(QGraphicsScene * scene)
     _pMap->setPaintRect(limitRect);
 
 }
-
-//void PluginCurvePresenter::pointPositionIsChanging(PluginCurvePoint *point)
-//{
-//  if (point == nullptr)
-//    return;
-//  PluginCurveSection * lSection = point->leftSection();
-//  PluginCurveSection * rSection = point->rightSection();
-//  QRectF rect = _pLimitRect->rect(); // define limit points positions
-//  QPointF oldPos = point->pos();
-//  QPointF newPos = point->pos();
-//  PluginCurvePoint * previous = nullptr;
-//  PluginCurvePoint * next = nullptr;
-//  if (lSection != nullptr)
-//    previous=lSection->sourcePoint(); // else nullptr
-//  if (rSection != nullptr)
-//    next=rSection->destPoint(); // else nullptr
-//  // Schema :
-//  // (point)Previous -- (curve)lSection -- (point)This -- (curve)rSection -- (point)Next
-
-//  // Magnetism
-//  if (_magnetism == true)
-//  {
-//      QPointF magnetPoint = _pGrid->nearestMagnetPoint(oldPos);
-//    if (qAbs(newPos.x() - magnetPoint.x()) <= MAGNETDIST)
-//    {
-//        newPos.setX(magnetPoint.x());
-//    }
-//    if (qAbs(newPos.y() - magnetPoint.y()) <= MAGNETDIST)
-//    {
-//        newPos.setY(magnetPoint.y());
-//    }
-//  }
-//  //Respect the minimum distance between points
-//  if (previous != nullptr && oldPos.x() < previous->x() + POINTMINDIST)
-//    newPos.setX(previous->x() + POINTMINDIST);
-//  if (next != nullptr && oldPos.x() > next->x() - POINTMINDIST)
-//    newPos.setX(next->x() - POINTMINDIST);
-
-//  // if the point is out the limits
-//  if (rect.x() > newPos.x())
-//    newPos.setX(rect.x());
-//  if (rect.y() > newPos.y())
-//    newPos.setY(rect.y());
-//  if (rect.x() + rect.width() < newPos.x())
-//    newPos.setX(rect.x() + rect.width());
-//  if (rect.y() + rect.height() < newPos.y()){
-//    newPos.setY(rect.y() + rect.height());
-//    std::cout<< "LimitRect : " << _pLimitRect->rect().height();
-//    std::cout << "rect : "   << rect.height();
-//  }
-//  //if the point can't move horizontally
-//  if (point->mobility() == Vertical && point->fixedCoordinate() != oldPos.x())
-//    {
-//      //oldPos.setX(point->fixedCoordinate());
-//      newPos.setX(point->fixedCoordinate());
-//    }
-//  point->setPos(newPos);
-
-//  // When the point reach another one
-//  // 3 curve must be modified.
-//  if (_pointCanCross)
-//    {
-//      if (next != nullptr && oldPos.x() > next->x())
-//        {
-//          crossByLeft(point);
-//        }
-//      if (previous != nullptr && oldPos.x() < previous->x())
-//        {
-//          crossByRight(point);
-//        }
-//    }
-//  //Adjust the Curves position.
-//  point->adjust();
-//}
 
 void PluginCurvePresenter::pointPositionHasChanged()
 {
@@ -791,11 +726,6 @@ void PluginCurvePresenter::pointPositionHasChanged()
 void PluginCurvePresenter::pointRightClicked(PluginCurvePoint *point)
 {
     PluginCurveMenuPoint menu(point);
-
-//    QMenu menu;
-//    menu.addAction("Delete");
-//    menu.addSeparator();
-//    menu.addAction("Blabla");
     QAction* selectedItem = menu.exec(point->globalPos().toPoint());
     if (selectedItem)
     {
@@ -815,5 +745,23 @@ void PluginCurvePresenter::pointRightClicked(PluginCurvePoint *point)
     else
     {
     //Do nothing
+    }
+}
+
+void PluginCurvePresenter::sectionRightClicked(PluginCurveSection *section, QPointF scenePos)
+{
+    // Get the global pos of the Cursor
+    Q_ASSERT(section->scene() != NULL); // the focus item belongs to a scene
+    Q_ASSERT(!section->scene()->views().isEmpty()); // that scene is displayed in a view...
+    Q_ASSERT(section->scene()->views().first() != NULL); // ... which is not null...
+    Q_ASSERT(section->scene()->views().first()->viewport() != NULL); // ... and has a viewport
+    QGraphicsView *v = section->scene()->views().first();
+    QPointF globalPos = v->viewport()->mapToGlobal(v->mapFromScene(scenePos));
+    PluginCurveMenuSection menu(section);
+    QAction *action = menu.exec(globalPos.toPoint());
+    if (action->text() == PluginCurveMenuSection::DELETE)
+    {
+        removePoint(section->sourcePoint());
+        removePoint(section->destPoint());
     }
 }

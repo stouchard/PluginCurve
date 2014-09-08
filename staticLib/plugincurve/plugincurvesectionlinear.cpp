@@ -44,8 +44,10 @@ PluginCurveSectionLinear::PluginCurveSectionLinear(PluginCurveView *parent, Plug
 
 QRectF PluginCurveSectionLinear::boundingRect() const
 {
-    QPointF dest = mapFromParent(_pDestPoint->pos());
-    QPointF source = mapFromParent(_pSourcePoint->pos());
+    QPointF source = parentItem()->transform().map(mapFromParent(_pSourcePoint->pos()));
+    QPointF dest = parentItem()->transform().map(mapFromParent(_pDestPoint->pos()));
+//    QPointF dest = mapFromParent(_pDestPoint->pos());
+//    QPointF source = mapFromParent(_pSourcePoint->pos());
     return QRectF(qMin(dest.x(),source.x()) - SHAPEHEIGHT,
                   qMin(dest.y(),source.y()) - SHAPEHEIGHT,
                   qAbs(dest.x()-source.x()) + 2*SHAPEHEIGHT,
@@ -54,8 +56,10 @@ QRectF PluginCurveSectionLinear::boundingRect() const
 
 QPainterPath PluginCurveSectionLinear::shape() const
 {
-  QPointF source = mapFromParent(_pSourcePoint->pos());
-  QPointF dest = mapFromParent(_pDestPoint->pos());
+//  QPointF source = mapFromParent(_pSourcePoint->pos());
+//  QPointF dest = mapFromParent(_pDestPoint->pos());
+  QPointF source = parentItem()->transform().map(mapFromParent(_pSourcePoint->pos()));
+  QPointF dest = parentItem()->transform().map(mapFromParent(_pDestPoint->pos()));
   QLineF line = QLineF(source,dest);
   qreal length = line.length();
   QPointF vector = QPointF(line.dx()*SHAPEHEIGHT/length,line.dy()*SHAPEHEIGHT/length);
@@ -81,8 +85,11 @@ QPainterPath PluginCurveSectionLinear::shape() const
 
 QPainterPath PluginCurveSectionLinear::path() const
 {
+
+  QPointF source = parentItem()->transform().map(mapFromParent(_pSourcePoint->pos()));
+  QPointF dest = parentItem()->transform().map(mapFromParent(_pDestPoint->pos()));
   QPainterPath path = QPainterPath(QPointF(0.0,0.0));
-  path.lineTo(_pDestPoint->pos()-_pSourcePoint->pos());
+  path.lineTo(dest-source);
   return path;
 }
 
@@ -91,8 +98,10 @@ void PluginCurveSectionLinear::paint(QPainter *painter, const QStyleOptionGraphi
     Q_UNUSED(option)
     Q_UNUSED(widget)
     QPen pen(QColor(Qt::darkGray).light(30), 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-    QPointF source = mapFromParent(_pSourcePoint->pos());
-    QPointF dest = mapFromParent(_pDestPoint->pos());
+    QPointF source = parentItem()->transform().map(mapFromParent(_pSourcePoint->pos()));
+    QPointF dest = parentItem()->transform().map(mapFromParent(_pDestPoint->pos()));
+//    QPointF source = mapFromParent(_pSourcePoint->pos());
+//    QPointF dest = mapFromParent(_pDestPoint->pos());
     QLineF line = QLineF(source,dest);
     qreal length = line.length();
     // ---> set gradients

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>535</width>
-    <height>306</height>
+    <width>580</width>
+    <height>353</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,18 +19,18 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>251</width>
-      <height>192</height>
+      <width>301</width>
+      <height>241</height>
      </rect>
     </property>
    </widget>
    <widget class="QTextBrowser" name="textBrowser">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>320</x>
       <y>10</y>
       <width>251</width>
-      <height>192</height>
+      <height>241</height>
      </rect>
     </property>
    </widget>
@@ -38,12 +38,22 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>210</y>
-      <width>511</width>
+      <y>260</y>
+      <width>561</width>
       <height>32</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QCheckBox" name="cBMagnet">
+       <property name="text">
+        <string>Magnetism</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QCheckBox" name="cBGrid">
        <property name="text">
@@ -64,16 +74,6 @@
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QCheckBox" name="cBMagnet">
-       <property name="text">
-        <string>Magnetism</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
     </layout>
    </widget>
   </widget>
@@ -82,7 +82,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>535</width>
+     <width>580</width>
      <height>25</height>
     </rect>
    </property>

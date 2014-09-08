@@ -43,6 +43,7 @@ PluginCurveView::PluginCurveView(QGraphicsObject *parent)
   : QGraphicsObject(parent)
 {
   _pSelectionRectangle = new QGraphicsRectItem(QRect(QPoint(),QSize()),this);
+  _pSelectionRectangle->setFlag(ItemIgnoresTransformations);
   _pSelectionRectangle->hide();
   setFlag(ItemIsFocusable); // For board entries
   setFlag(ItemClipsChildrenToShape); // Children can't be drawn outside this item's shape
@@ -63,7 +64,7 @@ void PluginCurveView::zoom(QPointF origin, qreal delta)
 {
     qreal scaleY = transform().m22();
     qreal fact = delta / 120;
-    QTransform tr = QTransform::fromScale(1,(fact/10)+scaleY);
+    QTransform tr = QTransform::fromScale(1,qMax((fact/10)+scaleY,0.1)); /// @todo Mieux gerer les facteurs.
     setTransformOriginPoint(origin);
     prepareGeometryChange();
     setTransform(tr);
@@ -145,6 +146,8 @@ void PluginCurveView::startDrawSelectionRectangle(QPoint originSelectionRectangl
 {
   QRect rect;
   rect = QRect(originSelectionRectangle,originSelectionRectangle).normalized().intersected(boundingRect().toRect());
+  //Q_ASSERT(transform().isInvertible());
+  rect = transform().mapRect(rect);
   _pSelectionRectangle->setRect(rect);
   _pSelectionRectangle->show();
 }
@@ -154,8 +157,10 @@ void PluginCurveView::drawSelectionrectangle(QPoint originSelectionRectangle, QP
   QRect rect;
   QPainterPath painterPath;
   rect = QRect(originSelectionRectangle,destinationSelectionRectangle).normalized().intersected(boundingRect().toRect());
+  rect = transform().mapRect(rect); // Map the rectangle in the correct scale
   _pSelectionRectangle->setRect(rect);
-  painterPath.addPolygon(mapToScene(rect).toPolygon());
+  painterPath.addPolygon(mapToScene(transform().mapRect(rect)).toPolygon());
+  //Select the items
   scene()->setSelectionArea(painterPath,Qt::IntersectsItemShape);
 }
 
