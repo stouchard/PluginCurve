@@ -77,6 +77,8 @@ private:
   /* Adjusts point position after magntetism effect. */
   void adjustPointMagnetism(QPointF &newPos);
   /* Adjusts point position with minimum distance respectations. */
+  void adjustPointMinDist(PluginCurvePoint *previousPoint, PluginCurvePoint *nextPoint, QPointF &newPos);
+  /* Adjusts point position with minimum distance respectations. */
   void adjustPointMinDist(PluginCurvePoint *point, QPointF &newPos);
   /* Adjusts point position with limit area respectations. */
   void adjustPointLimit(QPointF &newPos);

@@ -7,7 +7,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QLineF>
 
-PluginCurveSection::PluginCurveSection(PluginCurveView *parent, PluginCurvePoint *source, PluginCurvePoint *dest) :
+PluginCurveSection::PluginCurveSection(QGraphicsObject *parent, PluginCurvePoint *source, PluginCurvePoint *dest) :
     QGraphicsObject(parent)
 {
     _pSourcePoint = source;

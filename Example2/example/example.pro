@@ -13,10 +13,10 @@ TEMPLATE = app
 CONFIG += c++11 warn_on
 
 SOURCES += main.cpp\
-            mainwindow.cpp\
+            mainwindow.cpp
 
 
-HEADERS  += mainwindow.hpp\
+HEADERS  += mainwindow.hpp
 
 FORMS    += mainwindow.ui
 

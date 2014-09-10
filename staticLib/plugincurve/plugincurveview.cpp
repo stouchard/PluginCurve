@@ -32,6 +32,7 @@
 #include "plugincurvegrid.hpp"
 #include "plugincurvepresenter.hpp"
 #include "plugincurvemap.hpp"
+#include "plugincurvezoomer.hpp"
 #include <QPainter>
 #include <QRectF>
 #include <QGraphicsScene>
@@ -42,6 +43,7 @@
 PluginCurveView::PluginCurveView(QGraphicsObject *parent)
   : QGraphicsObject(parent)
 {
+  _pZoomer = new PluginCurveZoomer(this);
   _pSelectionRectangle = new QGraphicsRectItem(QRect(QPoint(),QSize()),this);
   _pSelectionRectangle->setFlag(ItemIgnoresTransformations);
   _pSelectionRectangle->hide();
@@ -53,6 +55,12 @@ PluginCurveView::PluginCurveView(QGraphicsObject *parent)
 PluginCurveView::~PluginCurveView()
 {
     delete _pSelectionRectangle;
+    delete _pZoomer;
+}
+
+PluginCurveZoomer *PluginCurveView::zoomer()
+{
+    return _pZoomer;
 }
 
 QGraphicsRectItem *PluginCurveView::selectionRectangle()
@@ -60,25 +68,11 @@ QGraphicsRectItem *PluginCurveView::selectionRectangle()
   return _pSelectionRectangle;
 }
 
-void PluginCurveView::zoom(QPointF origin, qreal delta)
-{
-    qreal scaleY = transform().m22();
-    qreal fact = delta / 120;
-    QTransform tr = QTransform::fromScale(1,qMax((fact/10)+scaleY,0.1)); /// @todo Mieux gerer les facteurs.
-    setTransformOriginPoint(origin);
-    prepareGeometryChange();
-    setTransform(tr);
-
-    update();
-}
-
 void PluginCurveView::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
   Q_UNUSED(option)
   Q_UNUSED(widget)
-  painter->setRenderHint(QPainter::Antialiasing, true);
-  painter->setPen(Qt::blue);
-  painter->drawRect(boundingRect());
+  Q_UNUSED(painter)
 }
 
 /// @todo corriger si scene rect non défini !
@@ -134,6 +128,7 @@ QVariant PluginCurveView::itemChange(GraphicsItemChange change, const QVariant &
   switch (change)
     {
     case ItemSceneHasChanged:
+      //_pZoomer->prepareGeometryChange();
       emit(viewSceneChanged(scene())); // The new scene is emitted
       break;
     default:

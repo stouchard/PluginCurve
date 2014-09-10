@@ -22,7 +22,8 @@ SOURCES += plugincurve.cpp\
             plugincurvemap.cpp \
             plugincurvegrid.cpp \
     plugincurvemenupoint.cpp \
-    plugincurvemenusection.cpp
+    plugincurvemenusection.cpp \
+    plugincurvezoomer.cpp
 
 HEADERS += plugincurve.hpp\
            plugincurve2_global.hpp\
@@ -36,7 +37,8 @@ HEADERS += plugincurve.hpp\
            plugincurvemap.hpp \
            plugincurvegrid.hpp \
     plugincurvemenupoint.h \
-    plugincurvemenusection.hpp
+    plugincurvemenusection.hpp \
+    plugincurvezoomer.hpp
 
 unix:!symbian {
     maemo5 {

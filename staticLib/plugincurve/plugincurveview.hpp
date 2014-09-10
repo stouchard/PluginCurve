@@ -39,20 +39,24 @@ class QGraphicsItem;
 class PluginCurvePresenter;
 class PluginCurveGrid;
 class PluginCurveMap;
+class PluginCurveZoomer;
 
 class PluginCurveView : public QGraphicsObject
 {
   Q_OBJECT
 
+// PluginCurveview = window, _pOrthoBasis = scene.
+
 private:
 //  QGraphicsObject *_pParent; // Pointer to the parent storey
 //  PluginCurvePresenter *_pPresenter; // Pointer to the presenter
   QGraphicsRectItem *_pSelectionRectangle; // Selection Rectangle
+  PluginCurveZoomer *_pZoomer; // Contains all the others graphics element. Zoom effet will be applied on it.
 public:
   PluginCurveView(QGraphicsObject *parent);
   ~PluginCurveView();
   QGraphicsRectItem *selectionRectangle();
-  void zoom (QPointF origin, qreal delta);
+  PluginCurveZoomer *zoomer();
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
   QRectF boundingRect() const;
 

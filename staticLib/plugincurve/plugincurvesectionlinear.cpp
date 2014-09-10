@@ -35,19 +35,16 @@ knowledge of the CeCILL license and that you accept its terms.
 #include <QPainter>
 #include <QLineF>
 
-PluginCurveSectionLinear::PluginCurveSectionLinear(PluginCurveView *parent, PluginCurvePoint *source, PluginCurvePoint *dest) :
+PluginCurveSectionLinear::PluginCurveSectionLinear(QGraphicsObject *parent, PluginCurvePoint *source, PluginCurvePoint *dest) :
   PluginCurveSection(parent,source,dest)
 {
   _coef = 0;
-  setFlag(ItemIsFocusable,false); // Useless.
 }
 
 QRectF PluginCurveSectionLinear::boundingRect() const
 {
-    QPointF source = parentItem()->transform().map(mapFromParent(_pSourcePoint->pos()));
-    QPointF dest = parentItem()->transform().map(mapFromParent(_pDestPoint->pos()));
-//    QPointF dest = mapFromParent(_pDestPoint->pos());
-//    QPointF source = mapFromParent(_pSourcePoint->pos());
+    QPointF source = QPointF(0,0);
+    QPointF dest = (_pDestPoint->scenePos() - _pSourcePoint->scenePos());
     return QRectF(qMin(dest.x(),source.x()) - SHAPEHEIGHT,
                   qMin(dest.y(),source.y()) - SHAPEHEIGHT,
                   qAbs(dest.x()-source.x()) + 2*SHAPEHEIGHT,
@@ -56,10 +53,8 @@ QRectF PluginCurveSectionLinear::boundingRect() const
 
 QPainterPath PluginCurveSectionLinear::shape() const
 {
-//  QPointF source = mapFromParent(_pSourcePoint->pos());
-//  QPointF dest = mapFromParent(_pDestPoint->pos());
-  QPointF source = parentItem()->transform().map(mapFromParent(_pSourcePoint->pos()));
-  QPointF dest = parentItem()->transform().map(mapFromParent(_pDestPoint->pos()));
+  QPointF source = QPointF(0,0);
+  QPointF dest = (_pDestPoint->scenePos() - _pSourcePoint->scenePos());
   QLineF line = QLineF(source,dest);
   qreal length = line.length();
   QPointF vector = QPointF(line.dx()*SHAPEHEIGHT/length,line.dy()*SHAPEHEIGHT/length);
@@ -70,13 +65,11 @@ QPainterPath PluginCurveSectionLinear::shape() const
     {
       painterPath.lineTo(source + tVector + vector);
       painterPath.lineTo(dest - vector + tVector);
-      //painterPath.addPath(path().translated(tVector + vector));
     }
   painterPath.lineTo(dest);
   if (length > 2 * SHAPEHEIGHT) // if enough length
     {
       painterPath.lineTo(dest - vector - tVector);
-      //painterPath.addPath(path().toReversed().translated(-tVector - vector));
       painterPath.lineTo(source + vector - tVector);
     }
   painterPath.closeSubpath();
@@ -85,11 +78,10 @@ QPainterPath PluginCurveSectionLinear::shape() const
 
 QPainterPath PluginCurveSectionLinear::path() const
 {
-
-  QPointF source = parentItem()->transform().map(mapFromParent(_pSourcePoint->pos()));
-  QPointF dest = parentItem()->transform().map(mapFromParent(_pDestPoint->pos()));
+  QPointF source = _pSourcePoint->pos();
+  QPointF dest = _pDestPoint->pos();
   QPainterPath path = QPainterPath(QPointF(0.0,0.0));
-  path.lineTo(dest-source);
+  path.lineTo(mapToScene(dest)-mapToScene(source));
   return path;
 }
 
@@ -98,10 +90,8 @@ void PluginCurveSectionLinear::paint(QPainter *painter, const QStyleOptionGraphi
     Q_UNUSED(option)
     Q_UNUSED(widget)
     QPen pen(QColor(Qt::darkGray).light(30), 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-    QPointF source = parentItem()->transform().map(mapFromParent(_pSourcePoint->pos()));
-    QPointF dest = parentItem()->transform().map(mapFromParent(_pDestPoint->pos()));
-//    QPointF source = mapFromParent(_pSourcePoint->pos());
-//    QPointF dest = mapFromParent(_pDestPoint->pos());
+    QPointF source = QPointF(0,0);
+    QPointF dest = (_pDestPoint->scenePos() - _pSourcePoint->scenePos());
     QLineF line = QLineF(source,dest);
     qreal length = line.length();
     // ---> set gradients
@@ -134,5 +124,18 @@ void PluginCurveSectionLinear::paint(QPainter *painter, const QStyleOptionGraphi
         painter->setBrush(gradientExt);
         painter->drawPath(shape());
       }
-    //painter->drawLine(line);
+}
+
+QVariant PluginCurveSectionLinear::itemChange(GraphicsItemChange change, const QVariant &value)
+{
+    switch (change) {
+    case QGraphicsItem::ItemScaleChange:
+        //update();
+        //return QGraphicsItem::itemChange(change, value);
+        break;
+    default:
+        return QGraphicsItem::itemChange(change, value);
+        break;
+    }
+    return QGraphicsItem::itemChange(change, value);
 }

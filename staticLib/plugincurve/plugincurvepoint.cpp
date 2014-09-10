@@ -13,7 +13,7 @@
 #include <QGraphicsScene>
 #include <iostream>
 
-PluginCurvePoint::PluginCurvePoint(PluginCurveView *parent, PluginCurvePresenter *presenter, QPointF point, QPointF value, MobilityMode mobility, bool removable) :
+PluginCurvePoint::PluginCurvePoint(QGraphicsObject *parent, PluginCurvePresenter *presenter, QPointF point, QPointF value, MobilityMode mobility, bool removable) :
   QGraphicsObject(parent), _pPresenter(presenter)
 {
   _color = Qt::gray; // Point's color

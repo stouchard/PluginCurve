@@ -55,14 +55,14 @@ public slots :
 public:
     //! Constructs a PluginCurvePoint. The left section and right section are initially null.
        /*!
-         \param parent Point's parent, must be a PluginCurve view.
+         \param parent Point's parent.
          \param presenter Pointer to the presenter.
          \param point Point's initial position.
          \param value Point's value.
          \param mobility Point's mobility.
          \param removable Indicates if the point can be removed.
        */
-    PluginCurvePoint(PluginCurveView *parent, PluginCurvePresenter *presenter, QPointF point, QPointF value, MobilityMode mobility = Normal, bool removable = true);
+    PluginCurvePoint(QGraphicsObject *parent, PluginCurvePresenter *presenter, QPointF point, QPointF value, MobilityMode mobility = Normal, bool removable = true);
     ~PluginCurvePoint();
     /*! Sets the point's value to value.
     */

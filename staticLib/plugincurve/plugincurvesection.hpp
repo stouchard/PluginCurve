@@ -43,7 +43,7 @@ public:
          \param source The left point. It musn't be null.
          \param dest The right point. It musn't be null.
        */
-    PluginCurveSection(PluginCurveView *parent, PluginCurvePoint *source, PluginCurvePoint *dest); // Parent : PluginCurvePoint ? GraphicsCurveView ?
+    PluginCurveSection(QGraphicsObject *parent, PluginCurvePoint *source, PluginCurvePoint *dest); // Parent : PluginCurvePoint ? GraphicsCurveView ?
     ~PluginCurveSection();
     /*! Returns the source point. The function transform().map() should be used for obtain the point posistion in paint coordinates. */
     PluginCurvePoint *sourcePoint();

@@ -67,11 +67,13 @@ QRectF PluginCurveGrid::boundingRect() const
 
 void PluginCurveGrid::updateMagnetPoints()
 {
+    magnetPointX.clear();
+    magnetPointY.clear();
     qreal x,y;
     QRectF scaleRect = _pMap->scaleRect();
     QRectF paintRect = _pMap->paintRect();
-    stepY = pow(10,floor(log10f(scaleRect.height())));
-    stepX = pow(10,floor(log10f(scaleRect.width())));
+    stepY = pow(10,floor(log10f(qAbs(scaleRect.height()))));
+    stepX = pow(10,floor(log10f(qAbs(scaleRect.width()))));
     QPointF firstPoint = _pMap->scaleToPaint(QPointF(floor(scaleRect.x()/stepX + 1)*(stepX),floor(scaleRect.y()/stepY + 1)*(stepY)));
     qreal paintStepY = qAbs(_pMap->scaleToPaint(QPointF(0,stepY)).y() - _pMap->scaleToPaint(QPointF(0,0)).y());
     qreal paintStepX = _pMap->scaleToPaint(QPointF(stepX,0)).x() - _pMap->scaleToPaint(QPointF(0,0)).x();
