@@ -47,10 +47,17 @@ knowledge of the CeCILL license and that you accept its terms.
 #include <QCursor>
 #include <QTransform>
 #include <iostream>
+#include <QGraphicsTextItem>
 
 PluginCurvePresenter::PluginCurvePresenter(PluginCurve *parent, PluginCurveModel *model, PluginCurveView *view) :
   QObject(parent),_pModel(model),_pView(view)
 {
+  //----> SUPPRIMER
+  _pText = new QGraphicsTextItem(_pView);
+  _pText->setPos(10,10);
+  _pText->setPlainText("Blabla");
+  _pText->show();
+  //<---- SUPPRIMER
   // ** Initialisation **
   qreal minXValue = 0.01;
   qreal minYValue = -10;
@@ -60,14 +67,9 @@ PluginCurvePresenter::PluginCurvePresenter(PluginCurve *parent, PluginCurveModel
   /// @todo prendre l'echelle en paramètre du constructeur (?)
   // Point's area in scale coordinate
   _scale = QRectF(minXValue,minYValue,maxXValue-minXValue,maxYValue-minYValue);
-  // The point area is stocked in a graphics item. A scale tranformation won't be applied on this rectangle in order to
-  // obtain the new point area after transformation.
-  _pLimitRect = new QGraphicsRectItem(QRectF(0,0,0,0),_pView);
-  _pLimitRect->setFlag(QGraphicsItem::ItemIgnoresTransformations); // No transformation should be applied.
-  _pLimitRect->hide();
   updateLimitRect();
-  _pMap = new PluginCurveMap(_scale,_pLimitRect->rect());
-  _pGrid = new PluginCurveGrid(_pView,_pMap);
+  _pMap = new PluginCurveMap(_scale,_limitRect);
+  _pGrid = new PluginCurveGrid(_pView->zoomer(),_pMap);
   // Points behavior
   //_pointCanCross = mainWindow()->pointCanCross();
   _pointCanCross = true;
@@ -114,7 +116,6 @@ PluginCurvePresenter::~PluginCurvePresenter()
     }
   delete _pMap;
   delete _pGrid;
-  delete _pLimitRect;
 }
 
   ///@todo customize cursors !!!
@@ -258,14 +259,11 @@ void PluginCurvePresenter::adjustPointMinDist(PluginCurvePoint *point, QPointF &
 
 void PluginCurvePresenter::adjustPointLimit(QPointF &newPos)
 {
-    QTransform tInv;
-    Q_ASSERT(_pView->transform().isInvertible());
-    tInv = _pView->transform().inverted();
-//    QRectF limitRect = _pLimitRect->rect();
-//    QRectF rect2 = _pView->mapRectFromItem(_pLimitRect,_pLimitRect->rect()); // define limit points positions
-//    QRectF rect3 = _pView->transform().mapRect(_pLimitRect->rect());
-    QRectF rect = tInv.mapRect(_pLimitRect->rect());
-//    QRectF rectScene = _pView->mapRectFromScene(_pLimitRect->mapRectToScene(_pLimitRect->rect()));
+//    QRectF limitRect = _limitRect();
+//    QRectF rect2 = _pView->mapRectFromItem(_limitRect,_limitRect); // define limit points positions
+//    QRectF rect3 = _pView->transform().mapRect(_limitRect);
+    QRectF rect = _pView->zoomer()->mapRectFromItem(_pView,_limitRect);
+//    QRectF rectScene = _pView->mapRectFromScene(_limitRect->mapRectToScene(_limitRect));
     if (rect.x() > newPos.x())
       newPos.setX(rect.x());
     if (rect.y() > newPos.y())
@@ -366,32 +364,42 @@ void PluginCurvePresenter::crossByRight(PluginCurvePoint *point, QPointF &newPos
 
 bool PluginCurvePresenter::enoughSpaceBefore(PluginCurvePoint *point)
 {
+  PluginCurveZoomer *zoomer= _pView->zoomer();
   PluginCurvePoint *previous = _pModel->previousPoint(point);
+  qreal pointX = _pView->mapFromItem(zoomer,point->pos()).x();
   if (previous != NULL)
-    return (point->x() - previous->x() >= 2*POINTMINDIST);
-  else
-    return (point->x() - _pLimitRect->rect().x() >= POINTMINDIST);
+  {
+    qreal previousX = _pView->mapFromItem(zoomer,previous->pos()).x();
+    return (pointX - previousX >= 2*POINTMINDIST);
+  }
+    else
+  {
+    return (pointX - _limitRect.x() >= POINTMINDIST);
+  }
 }
 
 bool PluginCurvePresenter::enoughSpaceAfter(PluginCurvePoint *point)
 {
+  PluginCurveZoomer *zoomer= _pView->zoomer();
   PluginCurvePoint *next = _pModel->nextPoint(point);
+  qreal pointX = _pView->mapFromItem(zoomer,point->pos()).x();
   if (next != NULL)
-    return (next->x() - point->x() >= 2*POINTMINDIST);
-  else
-    return (_pLimitRect->rect().x() + _pLimitRect->rect().width() - point->x() >= POINTMINDIST);
+  {
+    qreal nextX = _pView->mapFromItem(zoomer,next->pos()).x();
+    return (nextX - pointX >= 2*POINTMINDIST);
+  }
+    else
+  {
+    return (_limitRect.x() + _limitRect.width() - pointX >= POINTMINDIST);
+  }
 }
 
 void PluginCurvePresenter::updateLimitRect()
 {
-    QRectF limitRect (0 + PluginCurvePoint::SHAPERADIUS,
+    _limitRect = QRectF (0 + PluginCurvePoint::SHAPERADIUS,
                       0 + PluginCurvePoint::SHAPERADIUS,
                       _pView->boundingRect().width() - 2*PluginCurvePoint::SHAPERADIUS - 2,
                       _pView->boundingRect().height() - 2*PluginCurvePoint::SHAPERADIUS);
-    _pLimitRect->setRect(limitRect);
-    //----> SUPPRIMER
-    _pLimitRect->update();
-    //<---- SUPPRIMER
 }
 
 PluginCurveSection *PluginCurvePresenter::addSection(PluginCurvePoint *source, PluginCurvePoint *dest)
@@ -410,6 +418,7 @@ PluginCurveSection *PluginCurvePresenter::addSection(PluginCurvePoint *source, P
 }
 
 /// @todo Utiliser fonction déjà faites.
+/// qpoint : view coordinates
 PluginCurvePoint *PluginCurvePresenter::addPoint(QPointF qpoint, MobilityMode mobility, bool removable)
 {
   QPointF newPos = qpoint;
@@ -417,32 +426,19 @@ PluginCurvePoint *PluginCurvePresenter::addPoint(QPointF qpoint, MobilityMode mo
   PluginCurvePoint *previousPoint = nullptr;
   PluginCurvePoint *nextPoint = nullptr;
   PluginCurveSection *rightSection = nullptr;
+  // The zoomer is the point's parent.
+  PluginCurveZoomer *zoomer = _pView->zoomer();
 
   // No point added if out the aera
-  if (!(_pLimitRect->contains(qpoint)))
+  if (!_limitRect.contains(qpoint)) // qPoint view coordinate, _limitRect : view coordinate
     {
       return nullptr;
     }
 
-  // The zoomer is the parent.
-  PluginCurveZoomer *zoomer = _pView->zoomer();
-  newPos = zoomer->mapFromItem(_pView,newPos); // Map the new position in zoomer's coordinate.
+  newPos = zoomer->mapFromItem(_pView,newPos); // Map the new position in zoomer's coordinates (paint coordinates).
 
   // Magnetism
   adjustPointMagnetism(newPos);
-//  if (_magnetism == true)
-//  {
-//      QPointF magnetPoint = _pGrid->nearestMagnetPoint(newPos);
-//    if (qAbs(newPos.x() - magnetPoint.x()) <= MAGNETDIST)
-//    {
-//        newPos.setX(magnetPoint.x());
-//    }
-//    if (qAbs(newPos.y() - magnetPoint.y()) <= MAGNETDIST)
-//    {
-//        newPos.setY(magnetPoint.y());
-//    }
-//  }
-
   // Where place the point in the list
   int index = _pModel->pointSearchIndex(newPos);
   // Determine the previous point
@@ -458,25 +454,19 @@ PluginCurvePoint *PluginCurvePresenter::addPoint(QPointF qpoint, MobilityMode mo
   // No point added if not enough space
   if ((previousPoint != nullptr && !enoughSpaceAfter(previousPoint)) || // if there is a previous point and not enough space
       (nextPoint != nullptr && !enoughSpaceBefore(nextPoint)) || //  or if there is a next point and not enough space
-      (_pLimitRect->rect().width()<0)) // or there is no points and no space at all
+      (_limitRect.width()<0)) // or there is no points and no space at all
     {
       return nullptr;
     }
   // Correct the point position if too close of another one
   adjustPointMinDist(previousPoint,nextPoint,newPos);
-//  if (previousPoint != nullptr && newPos.x()-previousPoint->x() < POINTMINDIST)
-//    {
-//      newPos = QPointF(previousPoint->x() + POINTMINDIST,
-//                       newPos.y());
-//    }
-//  if (nextPoint != nullptr && nextPoint->x() - newPos.x() < POINTMINDIST)
-//    {
-//      newPos = QPointF(nextPoint->x() - POINTMINDIST,
-//                      newPos.y());
-//    }
-
+  // Create the point
   point = new PluginCurvePoint(zoomer,this,newPos,_pMap->paintToScale(newPos),mobility,removable);
   emit(notifyPointCreated(_pMap->paintToScale(newPos))); // Notify the user
+  _pText->setPlainText(QString("Value :%1 , %2 PaintPos : %3 , %4").arg(_pMap->paintToScale(newPos).x())
+                                                                   .arg(_pMap->paintToScale(newPos).y())
+                                                                   .arg(newPos.x())
+                                                                   .arg(newPos.y()));
   //Create a new curve, update previousPoint and point.
   if (previousPoint != nullptr)
     addSection(previousPoint,point);
@@ -696,21 +686,25 @@ void PluginCurvePresenter::keyPress(QKeyEvent *keyEvent)
     case Qt::Key_Right:
     {
         _pView->zoomer()->translateX(-5);
+        _pMap->setPaintRect(_pView->zoomer()->mapRectFromItem(_pView,_limitRect));
         break;
     }
     case Qt::Key_Left:
     {
         _pView->zoomer()->translateX(+5);
+        _pMap->setPaintRect(_pView->zoomer()->mapRectFromItem(_pView,_limitRect));
         break;
     }
     case Qt::Key_Up:
     {
         _pView->zoomer()->translateY(+5);
+        _pMap->setPaintRect(_pView->zoomer()->mapRectFromItem(_pView,_limitRect));
         break;
     }
     case Qt::Key_Down:
     {
         _pView->zoomer()->translateY(-5);
+        _pMap->setPaintRect(_pView->zoomer()->mapRectFromItem(_pView,_limitRect));
         break;
     }
     default:
@@ -737,22 +731,19 @@ void PluginCurvePresenter::keyRelease(QKeyEvent *keyEvent)
 void PluginCurvePresenter::wheelTurned(QGraphicsSceneWheelEvent *event)
 {
     PluginCurveZoomer *zoomer = _pView->zoomer();
-//    updateLimitRect();
     _pView->zoomer()->zoom(event->pos(),event->delta());
-    // Limit rect coordinate have changed
-    Q_ASSERT(zoomer->transform().isInvertible());
-    //_pMap->setPaintRect(zoomer->transform().inverted().mapRect(_pLimitRect->rect())); // Update map and grid
+    // Limit rect coordinate have changed in zoomer's coordinate system
+    _pMap->setPaintRect(zoomer->mapRectFromItem(_pView,_limitRect)); // Update map and grid
 }
 
 void PluginCurvePresenter::viewSceneChanged(QGraphicsScene * scene)
 {
     Q_UNUSED(scene);
-    QRectF limitRect (0 + PluginCurvePoint::SHAPERADIUS,
+    _limitRect = QRectF(0 + PluginCurvePoint::SHAPERADIUS,
                       0 + PluginCurvePoint::SHAPERADIUS,
                       _pView->boundingRect().width() - 2*PluginCurvePoint::SHAPERADIUS - 2,
                       _pView->boundingRect().height() - 2*PluginCurvePoint::SHAPERADIUS);
-    _pLimitRect->setRect(limitRect);
-    _pMap->setPaintRect(limitRect);
+    _pMap->setPaintRect(_pView->zoomer()->mapRectFromItem(_pView,_limitRect),false); // No scale rect change
 }
 
 void PluginCurvePresenter::pointPositionHasChanged()

@@ -49,8 +49,6 @@ public:
   QPainterPath path() const;
   // Paint the curve
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-  // Item change
-  QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 };
 
 #endif // PLUGINCURVESECTION_HPP

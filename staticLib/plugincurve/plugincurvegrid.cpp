@@ -3,9 +3,10 @@
 #include <iostream>
 #include <cmath>
 
-PluginCurveGrid::PluginCurveGrid(PluginCurveView *parent, PluginCurveMap *map) :
+PluginCurveGrid::PluginCurveGrid(QGraphicsObject *parent, PluginCurveMap *map) :
     QGraphicsObject(parent)
 {
+    //setFlag(ItemIgnoresTransformations);
     _pDefaultMap = new PluginCurveMap(QRectF(0,0,100,100),QRectF(0,0,3,3));
     if (map == nullptr)
         _pMap = _pDefaultMap;

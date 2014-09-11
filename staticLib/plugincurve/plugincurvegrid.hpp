@@ -33,7 +33,7 @@ public:
         \param parent The parent item.
         \param map The map used for transform coordinates.
     */
-    PluginCurveGrid(PluginCurveView *parent,PluginCurveMap *map);
+    PluginCurveGrid(QGraphicsObject *parent,PluginCurveMap *map);
     ~PluginCurveGrid();
     /*! Return the nearest magnetic point (in paint coordinate) of the point p (in paint coordinate)*/
     QPointF nearestMagnetPoint (QPointF p);

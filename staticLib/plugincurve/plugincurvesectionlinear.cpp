@@ -124,18 +124,9 @@ void PluginCurveSectionLinear::paint(QPainter *painter, const QStyleOptionGraphi
         painter->setBrush(gradientExt);
         painter->drawPath(shape());
       }
-}
-
-QVariant PluginCurveSectionLinear::itemChange(GraphicsItemChange change, const QVariant &value)
-{
-    switch (change) {
-    case QGraphicsItem::ItemScaleChange:
-        //update();
-        //return QGraphicsItem::itemChange(change, value);
-        break;
-    default:
-        return QGraphicsItem::itemChange(change, value);
-        break;
-    }
-    return QGraphicsItem::itemChange(change, value);
+    //---->SUPPRIMER
+    painter->setPen(Qt::red);
+    painter->setBrush(Qt::red);
+    painter->drawRect(boundingRect());
+    //<----SUPPRIMER
 }

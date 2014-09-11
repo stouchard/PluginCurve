@@ -8,7 +8,7 @@ class PluginCurveMap : public QObject
     Q_OBJECT
 
     /*!
-    *  This class enables to convert items in paint coordinates to scale coordinates and vice versa.
+    *  This class enables to convert items in View coordinates to scale coordinates and vice versa.
     *  @n
     *
     *  @brief Convert coordinates
@@ -18,9 +18,8 @@ class PluginCurveMap : public QObject
 
 // Attributes
 private:
-    QRectF _scaleRect; /*!< Define points' area in scale coordinate. */
-    QRectF _paintRect; /*!< Define points' area in paint coordinate. */
-
+    QRectF *_pScaleRect; /*!< Define points' area in scale coordinate. */
+    QRectF *_pPaintRect; /*!< Define points' area in paint coordinate. */
 // Methods
 public:
     //! Construct a PluginCurveMap.
@@ -43,8 +42,8 @@ public:
     QRectF scaleRect();
     /*! Set the point's area in paint coordinate. */
     void setScaleRect(QRectF scaleRect);
-    /*! Set the point's area in scale coordinate. */
-    void setPaintRect(QRectF paintRect);
+    /*! Set the point's area in scale coordinate. If changeScaleRect is true, the scale rect will be modifie consequently. */
+    void setPaintRect(QRectF paintRect, bool changeScaleRect = true);
 signals:
     void mapChanged(); //! Indicates if a a cange occured.
 public slots:

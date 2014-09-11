@@ -36,6 +36,7 @@ public slots:
     void setAllFlags(bool b); /*! Changes the flags.*/
 
 //Methods
+
 public:
     //! Constructs a PluginCurveSection. The source and destination points must be modified after the instatiation of the section consequently.
        /*!
