@@ -8,14 +8,9 @@ PluginCurveZoomer::PluginCurveZoomer(QGraphicsObject *parent) :
 
 void PluginCurveZoomer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    Q_UNUSED(painter);
     Q_UNUSED(option);
     Q_UNUSED(widget);
-    //----> SUPPRIMER
-    painter->setRenderHint(QPainter::Antialiasing, true);
-    painter->setPen(Qt::blue);
-    painter->drawRect(boundingRect());
-    painter->drawEllipse(100,100,40,40);
-    //<---- SUPPRIMER
 }
 
 QRectF PluginCurveZoomer::boundingRect() const

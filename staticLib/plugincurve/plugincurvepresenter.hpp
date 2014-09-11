@@ -59,9 +59,9 @@ public:
  static const int POINTMINDIST= 1; // Minimal Distance on x axis between 2 points.
  static const int MAGNETDIST= 4; // Distance of magnetism attraction.
 private:
- //----> SUPPRIMER
- QGraphicsTextItem *_pText;
- //<---- SUPPRIMER
+// //----> SUPPRIMER
+// QGraphicsTextItem *_pText;
+// //<---- SUPPRIMER
  QRectF _limitRect; // Limit if the points' area in View coordinate
  QRectF _scale; // Indicates the value of the bottom left point and the topleft point.
  PluginCurveMap *_pMap; // Transform device in point coordinates to paint coordinates and vice-versa.

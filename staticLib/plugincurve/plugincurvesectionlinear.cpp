@@ -124,9 +124,4 @@ void PluginCurveSectionLinear::paint(QPainter *painter, const QStyleOptionGraphi
         painter->setBrush(gradientExt);
         painter->drawPath(shape());
       }
-    //---->SUPPRIMER
-    painter->setPen(Qt::red);
-    painter->setBrush(Qt::red);
-    painter->drawRect(boundingRect());
-    //<----SUPPRIMER
 }

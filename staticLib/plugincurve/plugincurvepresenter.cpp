@@ -52,12 +52,12 @@ knowledge of the CeCILL license and that you accept its terms.
 PluginCurvePresenter::PluginCurvePresenter(PluginCurve *parent, PluginCurveModel *model, PluginCurveView *view) :
   QObject(parent),_pModel(model),_pView(view)
 {
-  //----> SUPPRIMER
-  _pText = new QGraphicsTextItem(_pView);
-  _pText->setPos(10,10);
-  _pText->setPlainText("Blabla");
-  _pText->show();
-  //<---- SUPPRIMER
+//  //----> SUPPRIMER
+//  _pText = new QGraphicsTextItem(_pView);
+//  _pText->setPos(10,10);
+//  _pText->setPlainText("Blabla");
+//  _pText->show();
+//  //<---- SUPPRIMER
   // ** Initialisation **
   qreal minXValue = 0.01;
   qreal minYValue = -10;
@@ -463,10 +463,10 @@ PluginCurvePoint *PluginCurvePresenter::addPoint(QPointF qpoint, MobilityMode mo
   // Create the point
   point = new PluginCurvePoint(zoomer,this,newPos,_pMap->paintToScale(newPos),mobility,removable);
   emit(notifyPointCreated(_pMap->paintToScale(newPos))); // Notify the user
-  _pText->setPlainText(QString("Value :%1 , %2 PaintPos : %3 , %4").arg(_pMap->paintToScale(newPos).x())
-                                                                   .arg(_pMap->paintToScale(newPos).y())
-                                                                   .arg(newPos.x())
-                                                                   .arg(newPos.y()));
+//  _pText->setPlainText(QString("Value :%1 , %2 PaintPos : %3 , %4").arg(_pMap->paintToScale(newPos).x())
+                                                                   //.arg(_pMap->paintToScale(newPos).y())
+                                                                   //.arg(newPos.x())
+                                                                   //.arg(newPos.y()));
   //Create a new curve, update previousPoint and point.
   if (previousPoint != nullptr)
     addSection(previousPoint,point);
